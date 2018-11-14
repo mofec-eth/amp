@@ -84,35 +84,45 @@ var Saiku = {
 Backbone.emulateHTTP = false;
 
 // Load plugins.
-$(document).ready(function() {
-	Saiku.logger.log('Saiku.Document Ready');
-	var plugins = new PluginCollection();
-	plugins.fetch({
-		success : function() {
-			var i = plugins.size();
-			var j = 0;
-			plugins.each(function(log) {
-				j = j + 1;
-				
-				//Is important to make these calls sync so we continue only after loading all plugins.
-				jQuery.ajax({
-					url: log.attributes.path,
-					dataType: "script",
-					async: false,
-					cache: true
-				});
-
-				if (j == i) {
-					Saiku.logger.log('Saiku.Create Session');
-					Saiku.session = new Session({}, {
-						username : Settings.USERNAME,
-						password : Settings.PASSWORD
-					});
-					
-					Saiku.session.bind("tab:add", function() {
-					});
-				}
-			});
-		}
-	});
+$(document).ready(function () {
+    Saiku.logger.log('Saiku.Document Ready');
+    /* This is a change from original Saiku behavior, we need to know if the report is Donor/Pledge before
+    loading the Filters widget. */
+    var id = hash.match(/\d+$/);
+    $.getJSON(Settings.AMP_PATH + '/' + id, loadPlugins);
 });
+
+function loadPlugins(data) {
+    // Save report's metadata for later usage in QueryRouter.js
+    Saiku.originalReportMetadata = data;
+    console.log(data.reportMetadata.reportSpec.reportType);
+    var plugins = new PluginCollection();
+    plugins.fetch({
+        success: function () {
+            var i = plugins.size();
+            var j = 0;
+            plugins.each(function (plugin) {
+                j = j + 1;
+
+                //Is important to make these calls sync so we continue only after loading all plugins.
+                jQuery.ajax({
+                    url: plugin.attributes.path,
+                    dataType: "script",
+                    async: false,
+                    cache: true
+                });
+
+                if (j === i) {
+                    Saiku.logger.log('Saiku.Create Session');
+                    Saiku.session = new Session({}, {
+                        username: Settings.USERNAME,
+                        password: Settings.PASSWORD
+                    });
+
+                    Saiku.session.bind("tab:add", function () {
+                    });
+                }
+            });
+        }
+    });
+}
