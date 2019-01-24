@@ -1,3 +1,5 @@
+<%@page import="org.digijava.module.aim.dbentity.AmpAuditLogger"%>
+<%@page import="org.springframework.security.acls.domain.AuditLogger"%>
 <%@ page pageEncoding="UTF-8"%>
 <%@ taglib uri="/taglib/struts-bean" prefix="bean"%>
 <%@ taglib uri="/taglib/struts-logic" prefix="logic"%>
@@ -57,15 +59,27 @@ function actionChanged(value){
 }
 
 function submitClean(){
+	
 	if (document.getElementById("actionId").value == 'delete' && ! confirm("<digi:trn jsFriendly='true'>Do you really want to delete this log information</digi:trn> ?")){
-		return;
+		
 	}
+	return;
+}
 
- <digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?clean=true" />
+<digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?clean=true" />
 	document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>";
 	document.aimAuditLoggerManagerForm.target = "_self";
-	document.aimAuditLoggerManagerForm.submit();
-}
+	document.aimAuditLoggerManagerForm.submit(); 
+	}
+	
+	function findLog(value){
+				
+myForm.activityId.value = value;
+alert(document.myForm.activityId.value);
+document.myForm.submit();
+		
+	}
+
 
 function toggleLoggs(){
 	log = document.getElementById("login").checked;
@@ -208,7 +222,7 @@ function exportScorecard () {
 					<c:if test="${aimAuditLoggerManagerForm.withLogin==false }">
 						<input type="checkbox" id="login" onchange="toggleLoggs()">${loginTr}
 					</c:if>
-				  
+				
 				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleSettings();" id="displaySettingsButton"><digi:trn key="aim:Showcleanupoptions">Show cleanup options</digi:trn> &gt;&gt;</span>
                                 &nbsp;<br>
 								<div style="display:none;background-color:#ffffff;padding:2px" id="currentDisplaySettings" >
@@ -360,6 +374,8 @@ function exportScorecard () {
 									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=actiondesc">
 										<b><digi:trn key="aim:action">Action</digi:trn></b>									
 									</digi:link>
+									
+									  
 								</c:if></td>
                                                                 <td  align="center" valign="center"bgcolor="#C7D4DB"style="color: black;" nowrap>
                                                                 <c:choose>
@@ -375,6 +391,21 @@ function exportScorecard () {
                                                                     </c:otherwise>
                                                                 </c:choose>				
                                         </td>
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        </td>
+                                                                <td  align="center" valign="center"bgcolor="#C7D4DB"style="color: black;" nowrap>
+                                                               
+                                                                            
+                                                                        <b><digi:trn>Previous</digi:trn></b>
+                                                                          
+                                                                     
+                                        </td>
+                                        
+                                        
 							</tr>
 							<logic:iterate name="aimAuditLoggerManagerForm" property="logs"
 								id="log" type="org.digijava.module.aim.dbentity.AmpAuditLogger">
@@ -442,6 +473,13 @@ function exportScorecard () {
 										<digi:trn>No Data</digi:trn>
 									</c:if>
 								</td>
+								
+								<td>                   
+								 <c:if test="${log.objectType != '.|||User Login '}">
+                               <html:submit    onclick="javascript:findLog(${log.objectId})">previous</html:submit>
+                               </c:if>
+
+       							</td>
 							</tr>
                           </logic:iterate>
 						</table>
@@ -554,3 +592,24 @@ function exportScorecard () {
 	setHoveredTable("dataTable", false);
 </script>
 </digi:form>
+
+
+
+
+
+<!-- yoyr -->
+
+
+		
+		<digi:form name= "myForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm" >
+				<input type="hidden" name="activityId" id="activityId"
+				   value="" />
+			<logic:notEmpty name="currentMember" scope="session">
+				<input type="hidden" id="SubmitButton" value="<digi:trn>Compare versions</digi:trn>" onload="submitCompare(this.form)"/>
+			</logic:notEmpty>  
+			
+		
+		</digi:form>
+
+
+
