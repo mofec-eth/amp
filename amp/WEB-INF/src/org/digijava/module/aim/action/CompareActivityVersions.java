@@ -90,9 +90,7 @@ public class CompareActivityVersions extends DispatchAction {
 
         vForm.setOutputCollection(new ArrayList<CompareOutput>());
         // Load the activities.
-        vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId(), vForm.getActivityTwoId()));
-        vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId()));
-        
+   vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId(), vForm.getActivityTwoId()));
         
         return mapping.findForward("forward");
     }
