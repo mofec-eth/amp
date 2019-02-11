@@ -45,7 +45,7 @@ public class AuditCleanerMsgJob extends ConnectionCleaningJob {
                 message.setPriorityLevel(MessageConstants.PRIORITY_LEVEL_CRITICAL);
                 
                 message.setDescription(BODY_1
-                        + FeaturesUtil.getGlobalSettingValue(GlobalSettingsConstants.AUTOMATIC_AUDIT_LOGGER_CLEANUP)
+                        + FeaturesUtil.getGlobalSettingValue("Automatic Audit Logger Cleanup")
                         + BODY_2 + FormatHelper.formatDate(AuditCleaner.getInstance().getNextcleanup()));
                 message.setCreationDate(new Date(System.currentTimeMillis()));
                 //message.setReceivers(strreceiveirs);

@@ -114,8 +114,7 @@ public class GlobalSettingsConstants {
     
     public static final String DAILY_CURRENCY_RATES_UPDATE_TIMEOUT = "Daily Currency Rates Update Timeout";
     
-    public static final String AUTOMATIC_AUDIT_LOGGER_CLEANUP = "Automatic Audit Logger Cleanup";
-    
+ 
     public static final String NPD_DEFAULT_PROGRAM = "NPD Default Program";
     
     public static final String COMPONENT_TYPE = "Default Component Type";

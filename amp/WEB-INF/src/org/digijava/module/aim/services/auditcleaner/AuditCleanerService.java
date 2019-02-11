@@ -16,8 +16,8 @@ public class AuditCleanerService extends AbstractServiceImpl {
 
     protected void processInitEvent(ServiceContext serviceContext) {
         String cleanerEnabled = FeaturesUtil
-                .getGlobalSettingValue(GlobalSettingsConstants.AUTOMATIC_AUDIT_LOGGER_CLEANUP);
-        if (cleanerEnabled != null) {
+                .getGlobalSettingValue("Automatic Audit Logger Cleanup");
+                      if (cleanerEnabled != null) {
             if (!("-1").equalsIgnoreCase(cleanerEnabled)) {
                 startCleaner(Integer.parseInt(cleanerEnabled));
             }

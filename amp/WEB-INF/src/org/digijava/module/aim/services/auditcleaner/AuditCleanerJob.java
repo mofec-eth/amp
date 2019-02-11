@@ -2,6 +2,7 @@ package org.digijava.module.aim.services.auditcleaner;
 
 import org.apache.log4j.Logger;
 import org.digijava.kernel.persistence.PersistenceManager;
+import org.digijava.module.aim.form.GlobalSettingsForm;
 import org.digijava.module.aim.helper.GlobalSettingsConstants;
 import org.digijava.module.aim.util.AuditLoggerUtil;
 import org.digijava.module.aim.util.FeaturesUtil;
@@ -23,10 +24,16 @@ public class AuditCleanerJob extends ConnectionCleaningJob {
      */
     @Override
     public void executeInternal(JobExecutionContext contex) throws JobExecutionException {
-        String deletetime = FeaturesUtil.getGlobalSettingValue(GlobalSettingsConstants.AUTOMATIC_AUDIT_LOGGER_CLEANUP);
+        
+
+        String deletetime = FeaturesUtil.getGlobalSettingValue("Automatic Audit Logger Cleanup");
+                if(!(deletetime.equals("-1")))
+                {
+              
         logger.info("Starting to delete audit logs older than " + deletetime + " days.............................");
         AuditLoggerUtil.deleteLogsByPeriod(deletetime);
         logger.info("Delete Audit logs finished...................................................");
+                }
     }
 
 }
