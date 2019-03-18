@@ -37,6 +37,10 @@ public class CompareActivityVersionsForm extends ActionForm {
 
     private Map<String, Map<String, List<CompareOutput>>> listOfOutputCollectionGrouped;
 
+    public Map<String, Map<String, List<CompareOutput>>> getListOfOutputCollectionGrouped() {
+        return listOfOutputCollectionGrouped;
+    }
+    
     public void setListOfOutputCollectionGrouped(
             Map<String, Map<String, List<CompareOutput>>> listOfOutputCollectionGrouped) {
         this.listOfOutputCollectionGrouped = listOfOutputCollectionGrouped;

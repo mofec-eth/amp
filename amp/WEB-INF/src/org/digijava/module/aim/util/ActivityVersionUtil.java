@@ -42,6 +42,7 @@ import org.digijava.module.editor.util.DbUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class ActivityVersionUtil {
 
@@ -348,13 +349,21 @@ public class ActivityVersionUtil {
     public static Map<String, List<CompareOutput>> compareActivities(Long activityOneId) throws Exception {
 
         Session session = PersistenceManager.getCurrentSession();
+        //Get away with load is invalid without active transaction
+        //and TransactionException: nested transactions
+        //session.setFlushMode(FlushMode.COMMIT);
+        Transaction txn = session.getTransaction();
+        if (txn == null || !txn.isActive()) {
+            txn = session.beginTransaction();
+        }
         AmpActivityVersion ampActivityOne = (AmpActivityVersion) session.load(AmpActivityVersion.class, activityOneId);
         AmpActivityVersion ampActivityTwo = ActivityUtil.getPreviousVersion(ampActivityOne);
         // Since ampActivityTwo is a ref. variable of type AmpActivityVersion,
         // we can't use equals() to compare references.
         // Instead we use == operator to compare references, while equals() is to compare the object content.
-        return (ampActivityTwo == null) ? null
-                : compareActivities(activityOneId, ampActivityTwo.getAmpActivityId());
+        Map<String, List<CompareOutput>> result = (ampActivityTwo == null) ? null : compareActivities(activityOneId, ampActivityTwo.getAmpActivityId());
+        txn.commit();
+        return result;
 
     }
         

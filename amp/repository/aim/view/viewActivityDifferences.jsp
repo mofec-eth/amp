@@ -106,7 +106,7 @@
 				</tr>
 
 					<%-- Iterate through the list of output collections for compareAll method... --%>
-				<c:if test="${aimCompareActivityVersionsForm.method == 'compareAll'}">
+				<c:if test="${(not empty aimCompareActivityVersionsForm.listOfOutputCollectionGrouped) and (aimCompareActivityVersionsForm.method == 'compareAll')}">
 					<%int count = 0; %>
 					<logic:iterate id="listItem" property="listOfOutputCollectionGroupedCollection" name="aimCompareActivityVersionsForm" type="java.util.Map.Entry">
 						<tr>
