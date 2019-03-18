@@ -14,6 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,6 +51,8 @@ import org.hibernate.Transaction;
 public class ActivityVersionUtil {
 
     private static Logger logger = Logger.getLogger(ActivityVersionUtil.class);
+    
+    private static Map<String, Map<String, List<CompareOutput>>> listOfOutputCollectionGrouped = new HashMap<>();
 
 
     public static Method getMethodFromFieldName(String fieldName, Class auxClass, String prefix) throws Exception {
@@ -675,23 +681,19 @@ public class ActivityVersionUtil {
         }
     }
 
-    public static Map<String, Map<String, List<CompareOutput>>> getOutputCollectionGrouped() {
+    public static Map<String, Map<String, List<CompareOutput>>> getOutputCollectionGrouped() throws Exception {
 
-        Map<String, Map<String, List<CompareOutput>>> listOfOutputCollectionGrouped = new HashMap<>();
+    	List<Object[]> lists = AuditLoggerUtil.getListOfActivitiesFromAuditLogger();
 
-        //Use lambda through the accept method from java consumer functional interface
-        // to create listOfOutputCollectionGrouped
-        AuditLoggerUtil.getListOfActivitiesFromAuditLogger().forEach((Object[] activityObj) -> {
-            Map<String, List<CompareOutput>> compareOutput;
-            try {
-                compareOutput = compareActivities(Long.parseLong(String.valueOf(activityObj[0]).trim()));
-                if (compareOutput != null) {
-                    listOfOutputCollectionGrouped.put(String.valueOf(activityObj[1]).trim(), compareOutput);
-                }
-            } catch (Throwable e) {
-                return; //Get rid if any exception in the current iteration and continue with next iteration
-            }
+        //Since this is short-lived async task
+        CountDownLatch signal = new CountDownLatch(lists.size());
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        lists.forEach((final Object[] activityObj) -> {
+            executorService.execute(new RunnableTask(signal, activityObj));
         });
+
+        signal.await();
 
         return listOfOutputCollectionGrouped;
 
@@ -752,6 +754,36 @@ public class ActivityVersionUtil {
          return retVal;
     }
      
-    
+     /**
+      * This class is used for parallel processing.
+      *
+      * @author Wessi:kiyako1991@gmail.com
+      */
+
+     static class RunnableTask implements Runnable {
+
+         private final Object[] obj;
+         private final CountDownLatch signal;
+
+         RunnableTask(CountDownLatch signal, Object[] obj) {
+             this.signal = signal;
+             this.obj = obj;
+         }
+
+         @Override
+         public void run() {
+             Map<String, List<CompareOutput>> compareOutput;
+             try {
+                 compareOutput = compareActivities(Long.parseLong(String.valueOf(obj[0]).trim()));
+                 if (compareOutput != null) {
+                     listOfOutputCollectionGrouped.put(String.valueOf(obj[1]).trim(), compareOutput);
+                 }
+             } catch (Throwable t) {
+                 t.printStackTrace();
+             }
+             signal.countDown();
+         }
+         
+     }
     
 }
