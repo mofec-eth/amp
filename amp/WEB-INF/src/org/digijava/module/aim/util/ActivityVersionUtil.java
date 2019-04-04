@@ -14,7 +14,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
+
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.wicket.util.string.Strings;
@@ -42,6 +51,8 @@ import org.digijava.module.editor.util.DbUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import clover.it.unimi.dsi.fastutil.Arrays;
 
 public class ActivityVersionUtil {
 
@@ -361,6 +372,7 @@ public class ActivityVersionUtil {
        
     public static Map<String, List<CompareOutput>> compareActivities(Long activityOneId, Long activityTwoId)
             throws Exception {
+        
         Session session = PersistenceManager.getCurrentSession();
         AmpActivityVersion ampActivityOne = (AmpActivityVersion) session.load(AmpActivityVersion.class, activityOneId);
 
@@ -378,6 +390,7 @@ public class ActivityVersionUtil {
         ActivityHistory auditHistory2 = ActivityVersionUtil.getAuditHistory(ampActivityTwo);
         // Retrieve annotated for versioning fields.
         Field[] fields = AmpActivityFields.class.getDeclaredFields();
+        
         for (int i = 0; i < fields.length; i++) {
             // logger.info(fields[i]);
             CompareOutput output = new CompareOutput();
@@ -668,11 +681,15 @@ public class ActivityVersionUtil {
 
     public static Map<String, Map<String, List<CompareOutput>>> getOutputCollectionGrouped() {
 
+        StopWatch stopWatch = new StopWatch();
+        System.out.println("STARTING STOPWATCH");
+        stopWatch.start();
+        
         Map<String, Map<String, List<CompareOutput>>> listOfOutputCollectionGrouped = new HashMap<>();
-
         //Use lambda through the accept method from java consumer functional interface
         // to create listOfOutputCollectionGrouped
-        AuditLoggerUtil.getListOfActivitiesFromAuditLogger().forEach((Object[] activityObj) -> {
+            
+        AuditLoggerUtil.getListOfActivitiesFromAuditLogger().parallelStream().forEach((Object[] activityObj) -> {
             Map<String, List<CompareOutput>> compareOutput;
             try {
                 compareOutput = compareActivities(Long.parseLong(String.valueOf(activityObj[0]).trim()));
@@ -682,10 +699,13 @@ public class ActivityVersionUtil {
             } catch (Throwable e) {
                 return; //Get rid if any exception in the current iteration and continue with next iteration
             }
-        });
+        });    
+        
+        System.out.println("STOPPING STOPWATCH");
+        stopWatch.stop();
+        System.out.println("Stopwatch time: " + stopWatch);
 
         return listOfOutputCollectionGrouped;
-
     }
      
     private static void addAsDifferentIfNnoPresent(List<CompareOutput> outputCollection, Field[] fields, int i,
@@ -741,8 +761,6 @@ public class ActivityVersionUtil {
             retVal.get(obj.getDescriptionOutput()).add(obj);
          }
          return retVal;
-    }
-     
-    
-    
-}
+    }        
+ 
+     }

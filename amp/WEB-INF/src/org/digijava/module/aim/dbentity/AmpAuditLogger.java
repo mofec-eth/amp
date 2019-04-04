@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 
 import org.digijava.module.aim.helper.Constants;
 import org.digijava.module.aim.util.FeaturesUtil;
+import org.hibernate.annotations.BatchSize;
 
+@BatchSize(size = 100)
 public class AmpAuditLogger implements Comparable, Serializable {
     /**
      * 
