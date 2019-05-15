@@ -24,7 +24,8 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private boolean withLogin;
     
     private String filterBy;
-    
+    private String method;
+
     private List<String> selectedUser;
     private String selectedTeam;
     private Date dateFrom;
@@ -149,5 +150,12 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
 
     public void setFilterBy(String filterBy) {
         this.filterBy = filterBy;
+    }
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

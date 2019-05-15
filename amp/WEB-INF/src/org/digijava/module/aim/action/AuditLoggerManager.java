@@ -69,11 +69,11 @@ public class AuditLoggerManager extends MultiAction {
             vForm.setSortBy(request.getParameter("sortBy"));
         }
         
-        if(vForm.getFilterBy()!=null){
-            if(vForm.getFilterBy().equalsIgnoreCase("User")){
-               vForm.setSelectedUser(AuditLoggerUtil.getUsersFromLog());  
-            }
-        }
+//        if(vForm.getFilterBy()!=null){
+//            if(vForm.getFilterBy().equalsIgnoreCase("User")){
+//               vForm.setSelectedUser(AuditLoggerUtil.getUsersFromLog());  
+//            }
+//        }
 
         if(vForm.getSortBy()!=null){
                     Long siteId = RequestUtils.getSiteDomain(request).getSite().getId();
@@ -272,6 +272,17 @@ public class AuditLoggerManager extends MultiAction {
         return wb;
         
         
+    }
+    
+    public ActionForward auditUsersList(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;   
+        if(vForm.getFilterBy()!=null){
+          if(vForm.getFilterBy().equalsIgnoreCase("User")){
+             vForm.setSelectedUser(AuditLoggerUtil.getUsersFromLog());  
+          }
+      }
+    return mapping.findForward("forward");
     }
 }
 

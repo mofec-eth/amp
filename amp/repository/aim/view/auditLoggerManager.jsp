@@ -60,8 +60,8 @@ function filterChanged(value){
 		if (value == 'User'){
 			document.getElementById("filterdate").style="display:none";
 			document.getElementById("filteraction").style="display:show";
-			document.aimAuditLoggerManagerForm.filterBy.value = value;		
-//			document.aimAuditLoggerManagerForm.method.value = "auditUsersList";
+	//		document.aimAuditLoggerManagerForm.filterBy.value = value;	
+			document.aimAuditLoggerManagerForm.method.value = "auditUsersList";
  		    document.aimAuditLoggerManagerForm.submit();
  		    
 		}
@@ -220,7 +220,7 @@ function compareAll(){
 <!--  AMP Admin Logo -->
 <jsp:include page="teamPagesHeader.jsp"  />
 <!-- End of Logo -->
-<digi:form action="/auditLoggerManager.do" method="post">
+<digi:form styleId="auditLogger" action="/auditLoggerManager.do" method="post">
 <input type="hidden" name="withLogin">
 <input type="hidden" name="method" id="method" />
 <center>
@@ -268,8 +268,8 @@ function compareAll(){
 						<input type="checkbox" id="login" onchange="toggleLoggs()">${loginTr}
 					</c:if>
 				  
-				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleSettings();" id="displaySettingsButton"><digi:trn key="aim:Showcleanupoptions">Show cleanup options</digi:trn> &gt;&gt;</span>
-                                &nbsp;<br>
+				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleSettings();" id="displaySettingsButton"><digi:trn key="aim:Showcleanupoptions">Show cleanup options</digi:trn> &gt;&gt;<br></span>
+                                &nbsp;
 								<div style="display:none;background-color:#ffffff;padding:2px" id="currentDisplaySettings" >
                                  <table cellpadding="2" cellspacing="2" border="0" width="250px">
                                  <tr>
@@ -347,7 +347,7 @@ function compareAll(){
                                 	</td>
                                  	<td>
                                  	<html:select property="selectedUser" styleClass="inp-text" styleId="filteraction" style="display:none">
-
+                                    <html:optionsCollection property="selectedUser" value="selectedUser" label="selectedUser" />
                                  	</html:select>
                                  	</td>
                                  	</tr>
