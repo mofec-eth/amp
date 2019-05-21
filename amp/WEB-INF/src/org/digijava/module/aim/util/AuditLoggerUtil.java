@@ -258,14 +258,61 @@ public class AuditLoggerUtil {
             throw new RuntimeException(ex);
         }
     }
-    
-    public static List<String> getUsersFromLog() {
-        String query = "select distinct editorname from amp_audit_logger order by editorname asc";
-        Session session = PersistenceManager.getSession();
-        SQLQuery sqlQuery = session.createSQLQuery(query);
-        return sqlQuery.list();                
+    public static Collection<AmpAuditLogger> getFilteredUser(boolean withLogin, Long userid) {
+        try {
+            String qryStr = null;
+            if (!withLogin){
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                        + Constants.LOGIN_ACTION + "' and userid=:userid order by modifyDate desc";
+            } else {
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where userid=:userid order by modifyDate desc";
+            }
+            return PersistenceManager.getSession().createQuery(qryStr).setParameter("userid", userid).list();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Collection<AmpAuditLogger> getFilteredTeam(boolean withLogin, String filteredTeam) {
+        try {
+            String qryStr = null;
+            if (!withLogin){
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                        + Constants.LOGIN_ACTION + "' and teamname=:filteredTeam order by modifyDate desc";
+            } else {
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where teamname=:filteredTeam order by modifyDate desc";
+            }
+            return PersistenceManager.getSession().createQuery(qryStr).setParameter("filteredTeam", filteredTeam).list();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static Collection<AmpAuditLogger> getFilteredUserAndTeam(boolean withLogin, Long userid, String filteredTeam) {
+        try {
+            String qryStr = null;
+            if (!withLogin){
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                        + Constants.LOGIN_ACTION + "' and userid=:userid and teamname=:filteredTeam order by modifyDate desc";
+            } else {
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where and userid=:userid and teamname=:filteredTeam order by modifyDate desc";
+            }           
+            Query qry = PersistenceManager.getSession().createQuery(qryStr);
+            qry.setParameter("filteredTeam", filteredTeam);
+            qry.setParameter("userid", userid);
+            return qry.list();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
+    public static List<String> getTeamFromLog() {
+        String query = "select distinct teamname from amp_audit_logger \r\n" + 
+                "where teamname <> '' \r\n" + 
+                "order by teamname asc";   
+        Session session = PersistenceManager.getSession();
+        SQLQuery sqlQuery = session.createSQLQuery(query);
+        return sqlQuery.list();
+    }
         
     /**
      * 

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,9 @@ import org.digijava.kernel.util.RequestUtils;
 import org.digijava.module.aim.dbentity.AmpAuditLogger;
 import org.digijava.module.aim.form.AuditLoggerManagerForm;
 import org.digijava.module.aim.util.AuditLoggerUtil;
+
+import org.digijava.kernel.util.UserUtils;
+import org.digijava.module.um.util.AmpUserUtil;
 
 public class AuditLoggerManager extends MultiAction {
     
@@ -61,20 +65,28 @@ public class AuditLoggerManager extends MultiAction {
             }
                 
         }
-        
 
         Collection<AmpAuditLogger> logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());
+        
+        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
+            if(vForm.getSelectedUser() != -1){ 
+                logs = AuditLoggerUtil.getFilteredUser(vForm.isWithLogin(),vForm.getSelectedUser());
+            }
+            else if(vForm.getFilteredTeam() != null){
+                logs = AuditLoggerUtil.getFilteredTeam(vForm.isWithLogin(),vForm.getFilteredTeam());
+          }
+            }
+        
+//        if (vForm.getSelectedUser() != -1 && vForm.getFilteredTeam() != null) {
+//         logs = AuditLoggerUtil.getFilteredUserAndTeam(vForm.isWithLogin(),vForm.getSelectedUser(),vForm.getFilteredTeam());            
+//        }
         
         if (request.getParameter("sortBy")!=null){
             vForm.setSortBy(request.getParameter("sortBy"));
         }
         
-//        if(vForm.getFilterBy()!=null){
-//            if(vForm.getFilterBy().equalsIgnoreCase("User")){
-//               vForm.setSelectedUser(AuditLoggerUtil.getUsersFromLog());  
-//            }
-//        }
-
+        vForm.setUserList(AmpUserUtil.getAllUsers(false));
+        
         if(vForm.getSortBy()!=null){
                     Long siteId = RequestUtils.getSiteDomain(request).getSite().getId();
                     String langCode = RequestUtils.getNavigationLanguage(request).getCode();
@@ -147,6 +159,8 @@ public class AuditLoggerManager extends MultiAction {
 
                           }
         }
+        vForm.setTeamList(AuditLoggerUtil.getTeamFromLog());
+        
         vForm.setPagesToShow(10);
         int totalrecords=20;
         int page = 0;
@@ -190,20 +204,23 @@ public class AuditLoggerManager extends MultiAction {
     }
     
     
-    public ActionForward auditFilter(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        
-        AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
-        if(vForm.getFilterBy().equalsIgnoreCase("User")){
-            List user = vForm.getSelectedUser();
-        }
-        return null;
-    }
-        
-        
-        
-
+//    public ActionForward auditFilter(ActionMapping mapping, ActionForm form,
+//            HttpServletRequest request, HttpServletResponse response)
+//            throws Exception {
+//        Collection<AmpAuditLogger> logs = null; 
+//      AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
+//      if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
+//      if(vForm.getSelectedUser() != null){ 
+//            logs=AuditLoggerUtil.getFilteredUser(vForm.isWithLogin(),vForm.getSelectedUser());
+//      }
+//      if(vForm.getFilteredTeam() != null){
+//      logs=AuditLoggerUtil.getFilteredTeam(vForm.isWithLogin(),vForm.getFilteredTeam());
+//    }
+//      }
+//   //   return pageset (logs,mapping, form, request, response);
+//    }           
+      
+    
     public ActionForward modeSelect(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         return mapping.findForward("forward");
     }
@@ -272,17 +289,6 @@ public class AuditLoggerManager extends MultiAction {
         return wb;
         
         
-    }
-    
-    public ActionForward auditUsersList(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;   
-        if(vForm.getFilterBy()!=null){
-          if(vForm.getFilterBy().equalsIgnoreCase("User")){
-             vForm.setSelectedUser(AuditLoggerUtil.getUsersFromLog());  
-          }
-      }
-    return mapping.findForward("forward");
     }
 }
 

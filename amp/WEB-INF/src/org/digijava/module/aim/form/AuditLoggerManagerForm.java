@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.struts.action.ActionForm;
 
+import org.digijava.kernel.user.User;
+
 public class AuditLoggerManagerForm extends ActionForm implements Serializable{
 
     
@@ -22,12 +24,11 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private String useraction;
     private String frecuency;
     private boolean withLogin;
-    
-    private String filterBy;
-    private String method;
-
-    private List<String> selectedUser;
-    private String selectedTeam;
+    private Long selectedUser;
+    private Collection<User> userList;    
+    private List<Long> userId;
+    private List<String> teamList;
+    private String filteredTeam;
     private Date dateFrom;
     private Date dateTo;
     
@@ -112,20 +113,14 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
 
     public void setWithLogin(boolean withLogin) {
         this.withLogin = withLogin;
-    }
-    public List getSelectedUser() {
-        return selectedUser;
-    }
-
-    public void setSelectedUser(List<String> users) {
-        this.selectedUser = users;
-    }
-    public String getSelectedTeam() {
-        return selectedTeam;
+    } 
+    
+    public List<String> getTeamList() {
+        return teamList;
     }
 
-    public void setSelectedTeam(String selectedTeam) {
-        this.selectedTeam = selectedTeam;
+    public void setTeamList(List<String> teamList) {
+        this.teamList = teamList;
     }
 
     public Date getDateFrom() {
@@ -144,18 +139,33 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
         this.dateTo = dateTo;
     }
     
-    public String getFilterBy() {
-        return filterBy;
+    public List<Long> getUserId() {
+        return userId;
     }
 
-    public void setFilterBy(String filterBy) {
-        this.filterBy = filterBy;
-    }
-    public String getMethod() {
-        return method;
+    public void setUserId(List<Long> userId) {
+        this.userId = userId;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public Long getSelectedUser() {
+        return selectedUser;
+    }
+    public void setSelectedUser(Long users) {
+        this.selectedUser = users;
+    }
+
+   public Collection<User> getUserList() {
+        return userList;
+   }
+
+    public void setUserList(Collection<User> userList) {
+        this.userList = userList;
+    }
+    public String getFilteredTeam() {
+        return filteredTeam;
+    }
+
+    public void setFilteredTeam(String filteredTeam) {
+        this.filteredTeam = filteredTeam;
     }
 }

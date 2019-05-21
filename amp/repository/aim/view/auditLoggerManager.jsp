@@ -40,6 +40,20 @@
 .Hovered {
 	background-color:#a5bcf2;
 }
+.dateForm {
+margin: 0 auto;
+width: 210px;
+}
+.dateForm label{
+display: inline-block;
+text-align: right;
+float: left;
+}
+.dateForm input{
+display: inline-block;
+text-align: left;
+float: right;
+}
 
 </style>
 <script language="javascript">
@@ -56,23 +70,10 @@ function actionChanged(value){
 	}
 }
 
-function filterChanged(value){
-		if (value == 'User'){
+function filterChanged(value){	
 			document.getElementById("filterdate").style="display:none";
 			document.getElementById("filteraction").style="display:show";
-	//		document.aimAuditLoggerManagerForm.filterBy.value = value;	
-			document.aimAuditLoggerManagerForm.method.value = "auditUsersList";
  		    document.aimAuditLoggerManagerForm.submit();
- 		    
-		}
-		if (value == 'Workspace'){
-			document.getElementById("filterdate").style="display:none";
-			document.getElementById("filteraction").style="display:show";
-		}
-		if (value == 'Date'){
-			document.getElementById("filterdate").style="display:show";
-			document.getElementById("filteraction").style="display:none";
-		}
 }
 
 
@@ -88,13 +89,17 @@ function submitClean(){
 }
 
 function submitFilter() {
+	if (document.getElementById("userId").value != null || document.getElementById("teamId").value != null) {
 	if (document.getElementById("userId").value != null) {
-	if (document.getElementById("filterId").value == 'User') {
-		var filtervalue = document.getElementById("userId").value;	
-		document.aimAuditLoggerManagerForm.selectedUser.value = filtervalue;
+		var filterUser = document.getElementById("userId").value;	
+		document.aimAuditLoggerManagerForm.selectedUser.value = filterUser;
+	}
+	if (document.getElementById("userId").value != null) {
+		var filterTeam = document.getElementById("teamId").value;
+		document.aimAuditLoggerManagerForm.filteredTeam.value = filterTeam;
+	}
 		document.aimAuditLoggerManagerForm.submit();
 	} 
-}
 }
 
 function toggleLoggs(){
@@ -193,8 +198,13 @@ function toggleFilterSettings(){
 	{
 		currentFilterSettings.css('display', 'inline-flex');
 		$('#exportScorecard').css('display','inline-flex');
-		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Hidefilteroptions">Hide Filter options</digi:trn>'+ ' &lt;&lt;');
+		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Hidefilteroptions">Hide Filter options</digi:trn>'+ ' &lt;&lt;');	
 	}
+}
+
+function reset() {
+	document.getElementById("userId").selectedIndex = 0;
+	document.getElementById("teamId").selectedIndex = 0;
 }
 
 function exportScorecard () {
@@ -220,7 +230,7 @@ function compareAll(){
 <!--  AMP Admin Logo -->
 <jsp:include page="teamPagesHeader.jsp"  />
 <!-- End of Logo -->
-<digi:form styleId="auditLogger" action="/auditLoggerManager.do" method="post">
+<digi:form action="/auditLoggerManager.do" method="post">
 <input type="hidden" name="withLogin">
 <input type="hidden" name="method" id="method" />
 <center>
@@ -332,30 +342,35 @@ function compareAll(){
                                  <table cellpadding="2" cellspacing="2" border="0" width="250px">
                                  <tr>
                                  	<td align="right">
-                                 	<strong><digi:trn>Filter by:</digi:trn>&nbsp;&nbsp;</strong>
+                                 	<strong><digi:trn>Filter by User:</digi:trn>&nbsp;&nbsp;</strong>
                                 	</td>
                                 	<td>
-                                 	<html:select property="filterBy" styleClass="inp-text" styleId="filterId" onchange="filterChanged(this.value);">
-                                 		<html:option value="User"><digi:trn>User</digi:trn> </html:option>
-                                 		<html:option value="Date"><digi:trn>Date</digi:trn> </html:option>
-                                 		<html:option value="Workspace"><digi:trn>Workspace</digi:trn> </html:option>
+                                    <html:select property="selectedUser" styleClass="inp-text" styleId="userId">
+                                 	<html:option value="-1">Select User </html:option>
+                                 	<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
                                  	</html:select>
-                                 	</td>
+                                 	</td> 
                                  	<tr>
                                  	<td align="right">
-                                 	<strong id ="filterBy" style="display:none"><digi:trn>Filter by:</digi:trn>&nbsp;&nbsp;</strong>
+                                 	<strong><digi:trn>Filter by Team:</digi:trn>&nbsp;&nbsp;</strong>
                                 	</td>
-                                 	<td>
-                                 	<html:select property="selectedUser" styleClass="inp-text" styleId="filteraction" style="display:none">
-                                    <html:optionsCollection property="selectedUser" value="selectedUser" label="selectedUser" />
+                                	<td>
+                                 	<html:select property="filteredTeam" styleClass="inp-text" styleId="teamId">
+                                 	<html:option value="-1">Select Team </html:option>
+                                	<html:options property="teamList"></html:options>
                                  	</html:select>
                                  	</td>
-                                 	</tr>
-                                 	<tr>
-                                 	<td align="left">
-                                 	<input type="text" id="filterdate" style="display:none;">
-                                 	</td>
-                                 	</tr>                                                                 
+                                 	</tr> 
+                                    <tr>
+                                 	<td align="right">
+                                 	<strong><digi:trn>Filter by Date:</digi:trn>&nbsp;&nbsp;</strong>
+                                 	<div class="dateForm">
+                                 	<label>From date:</label> <input type="text" name="Date From:" id="DateFromText" class="inp-text">
+                                 	<label>To date:</label>
+                                 	<input type="text" name="Date To:" id="DateToText" class="inp-text">
+                                 	</div> 
+                                 	</td> 
+                                    </tr>                                                      
                                  <tr>
                                 	<td align="right">
                                  		<input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>">
@@ -364,7 +379,7 @@ function compareAll(){
 									
 									<td align="left">
 									
-																			<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();toggleSettings()">
+																			<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();reset()">
 									</td>
                                  </tr>
                                  </table>
@@ -586,7 +601,8 @@ function compareAll(){
 							<c:set target="${urlParamsFirst}" property="page" value="1"/>
 							<c:set target="${urlParamsFirst}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsFirst}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-							<c:set target="${urlParamsFirst}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+							<c:set target="${urlParamsFirst}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsFirst}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:firstpage">First Page</digi:trn>
 							</c:set>
@@ -597,7 +613,8 @@ function compareAll(){
 							<c:set target="${urlParamsPrevious}" property="page" value="${aimAuditLoggerManagerForm.currentPage -1}"/>
 							<c:set target="${urlParamsPrevious}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsPrevious}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-							<c:set target="${urlParamsPrevious}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+							<c:set target="${urlParamsPrevious}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsPrevious}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:previouspage">Previous Page</digi:trn>
 							</c:set>|
@@ -615,7 +632,8 @@ function compareAll(){
 						<c:set target="${urlParams1}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 						<c:set target="${urlParams1}" property="page"><%=pages%></c:set>
 						<c:set target="${urlParams1}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-						<c:set target="${urlParams1}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+						<c:set target="${urlParams1}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+						<c:set target="${urlParams1}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 						<c:if test="${aimAuditLoggerManagerForm.currentPage == pages && aimAuditLoggerManagerForm.pagesSize > 1}">
 							<font color="#FF0000"><%=pages%></font>
 							|	
@@ -635,7 +653,8 @@ function compareAll(){
 							<c:set target="${urlParamsNext}" property="page" value="${aimAuditLoggerManagerForm.currentPage+1}"/>
 							<c:set target="${urlParamsNext}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsNext}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-							<c:set target="${urlParamsNext}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+							<c:set target="${urlParamsNext}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsNext}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 							<c:set var="translation"> <digi:trn key="aim:nextpage">Next Page</digi:trn></c:set>
 							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}">
 								<span style="font-size: 8pt; font-family: Tahoma;"><digi:trn key="aim:next">Next</digi:trn></span>
@@ -646,14 +665,16 @@ function compareAll(){
 							<c:set target="${urlParamsLast}" property="page" value="${aimAuditLoggerManagerForm.pagesSize}" />
 							<c:set target="${urlParamsLast}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-							<c:set target="${urlParamsLast}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsLast}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 						</c:if>
 						
 						<c:if test="${aimAuditLoggerManagerForm.pagesSize < aimAuditLoggerManagerForm.pagesToShow}">
 							<c:set target="${urlParamsLast}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsLast}" property="page" value="${aimAuditLoggerManagerForm.pagesSize}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
-							<c:set target="${urlParamsLast}" property="filterBy" value="${aimAuditLoggerManagerForm.filterBy}" />
+							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsLast}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
 						</c:if>
 						<c:set var="translation"><digi:trn key="aim:lastpage">Last Page</digi:trn></c:set>
 						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}">
