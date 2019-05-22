@@ -31,7 +31,25 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private String filteredTeam;
     private Date dateFrom;
     private Date dateTo;
+    private String method;
+    private boolean withDate;
     
+
+    public boolean isWithDate() {
+        return withDate;
+    }
+
+    public void setWithDate(boolean withDate) {
+        this.withDate = withDate;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
     public String getUseraction() {
         return useraction;

@@ -305,6 +305,24 @@ public class AuditLoggerUtil {
         }
     }
     
+    public static Collection<AmpAuditLogger> getFilterByDate(boolean withLogin, Date dateFrom, Date dateTo) {
+        try {
+            String qryStr = null;
+            if (!withLogin){
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                        + Constants.LOGIN_ACTION + "' and modifyDate>:dateFrom and modifyDate<:dateTo order by modifyDate desc";
+            } else {
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where modifyDate>:dateFrom and modifyDate<:dateTo order by modifyDate desc";
+            }
+            Query qry = PersistenceManager.getSession().createQuery(qryStr);
+            qry.setParameter("modifyDate", dateFrom);
+            qry.setParameter("modifyDate", dateTo);
+            return qry.list();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     public static List<String> getTeamFromLog() {
         String query = "select distinct teamname from amp_audit_logger \r\n" + 
                 "where teamname <> '' \r\n" + 
