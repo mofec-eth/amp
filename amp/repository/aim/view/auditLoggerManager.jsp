@@ -8,6 +8,7 @@
 <%@ taglib uri="/taglib/jstl-functions" prefix="fn" %>
 
 <%@page import="org.digijava.module.aim.services.auditcleaner.AuditCleaner"%>
+<jsp:include page="/repository/aim/view/scripts/newCalendar.jsp"  />
 <style>
 .contentbox_border{
 	border:1px solid #666666;
@@ -40,21 +41,6 @@
 .Hovered {
 	background-color:#a5bcf2;
 }
-.dateForm {
-margin: 0 auto;
-width: 210px;
-}
-.dateForm label{
-display: inline-block;
-text-align: right;
-float: left;
-}
-.dateForm input{
-display: inline-block;
-text-align: left;
-float: right;
-}
-
 </style>
 <script language="javascript">
 
@@ -70,13 +56,6 @@ function actionChanged(value){
 	}
 }
 
-function filterChanged(value){	
-			document.getElementById("filterdate").style="display:none";
-			document.getElementById("filteraction").style="display:show";
- 		    document.aimAuditLoggerManagerForm.submit();
-}
-
-
 function submitClean(){
 	if (document.getElementById("actionId").value == 'delete' && ! confirm("<digi:trn jsFriendly='true'>Do you really want to delete this log information</digi:trn> ?")){
 		return;
@@ -89,17 +68,12 @@ function submitClean(){
 }
 
 function submitFilter() {
-	if (document.getElementById("userId").value != null || document.getElementById("teamId").value != null) {
-	if (document.getElementById("userId").value != null) {
-		var filterUser = document.getElementById("userId").value;	
-		document.aimAuditLoggerManagerForm.selectedUser.value = filterUser;
-	}
-	if (document.getElementById("userId").value != null) {
-		var filterTeam = document.getElementById("teamId").value;
-		document.aimAuditLoggerManagerForm.filteredTeam.value = filterTeam;
-	}
-		document.aimAuditLoggerManagerForm.submit();
-	} 
+	document.aimAuditLoggerManagerForm.selectedUser.value = document.getElementById("userId").value;
+	document.aimAuditLoggerManagerForm.filteredTeam.value = document.getElementById("teamId").value;
+    log = document.getElementById("date").checked;
+	<digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?withDate=" />
+	document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
+	document.aimAuditLoggerManagerForm.submit();
 }
 
 function toggleLoggs(){
@@ -108,6 +82,17 @@ function toggleLoggs(){
 	document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
 	document.aimAuditLoggerManagerForm.target = "_self";
 	document.aimAuditLoggerManagerForm.submit();
+}
+
+function dateFilter(){
+	if(document.getElementById("date").checked == true){
+		document.getElementById('dateForm').style="display:visible";
+		document.aimAuditLoggerManagerForm.withDate.value = "true";
+		document.aimAuditLoggerManagerForm.submit();
+	}
+	if(document.getElementById("date").checked == false){
+		document.getElementById('dateForm').style="display:none";
+	}
 }
 
 function submitExport() {
@@ -363,11 +348,32 @@ function compareAll(){
                                  	</tr> 
                                     <tr>
                                  	<td align="right">
-                                 	<strong><digi:trn>Filter by Date:</digi:trn>&nbsp;&nbsp;</strong>
-                                 	<div class="dateForm">
-                                 	<label>From date:</label> <input type="text" name="Date From:" id="DateFromText" class="inp-text">
-                                 	<label>To date:</label>
-                                 	<input type="text" name="Date To:" id="DateToText" class="inp-text">
+                                 	<c:set var="dateTr">
+							        <digi:trn>Filter by date:</digi:trn>
+						            </c:set>
+				  <c:if test="${aimAuditLoggerManagerForm.withDate==true }">
+						<input type="checkbox" id="date" onchange="dateFilter()" checked="checked">${dateTr}
+					</c:if>
+					<c:if test="${aimAuditLoggerManagerForm.withDate==false }">
+						<input type="checkbox" id="date" onchange="dateFilter()">${dateTr}
+					</c:if>
+                                 	<div id="dateForm" class="dateForm" style="display:none">
+                                 	<p>From date:</p>
+                                 	<input type="text" name="date" id="DateFromText" class="inp-text">
+	                                <a id="date2" href='javascript:pickDateById2("dateForm","DateFromText",true,"tl")'>
+											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+										</a>
+										<a id="clear2" href='javascript:clearDate("DateFromText")'>
+											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+										</a>
+                                 	<p>To date:</p>
+                                 	<input type="text" name="dateToText" id="DateToText" class="inp-text">
+                                       <a id="date2" href='javascript:pickDateById2("dateForm","DateToText",true,"tl")'>
+											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+										</a>
+										<a id="clear2" href='javascript:clearDate("DateToText")'>
+											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+										</a>
                                  	</div> 
                                  	</td> 
                                     </tr>                                                      
@@ -379,7 +385,7 @@ function compareAll(){
 									
 									<td align="left">
 									
-																			<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();reset()">
+																			<input class="dr-menu" type="button" value="Reset" onclick="document.aimAuditLoggerManagerForm.reset();reset()">
 									</td>
                                  </tr>
                                  </table>

@@ -29,8 +29,7 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private List<Long> userId;
     private List<String> teamList;
     private String filteredTeam;
-    private Date dateFrom;
-    private Date dateTo;
+    private Date filterByDate;
     private String method;
     private boolean withDate;
     
@@ -141,22 +140,6 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
         this.teamList = teamList;
     }
 
-    public Date getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(Date dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public Date getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(Date dateTo) {
-        this.dateTo = dateTo;
-    }
-    
     public List<Long> getUserId() {
         return userId;
     }
@@ -186,4 +169,12 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     public void setFilteredTeam(String filteredTeam) {
         this.filteredTeam = filteredTeam;
     }
+    public Date getFilterByDate() {
+        return filterByDate;
+    }
+
+    public void setFilterByDate(Date filterByDate) {
+        this.filterByDate = filterByDate;
+    }
+
 }

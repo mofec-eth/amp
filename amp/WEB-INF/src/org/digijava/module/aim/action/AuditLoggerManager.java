@@ -1,9 +1,11 @@
 package org.digijava.module.aim.action;
 
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,6 +38,7 @@ public class AuditLoggerManager extends MultiAction {
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         
+        Collection<AmpAuditLogger> logs = null;        
         AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
         if (request.getParameter("clean") != null) {
             if (vForm.getUseraction().equalsIgnoreCase("delete")) {
@@ -65,23 +68,28 @@ public class AuditLoggerManager extends MultiAction {
             }
                 
         }
-
-        Collection<AmpAuditLogger> logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());
         
         if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() !=null) {
-            if(vForm.getSelectedUser() != -1 && vForm.getFilteredTeam().equals("-1")){ 
+            if(vForm.isWithDate() == false) {
+            if(vForm.getSelectedUser() != -1){ 
                 logs = AuditLoggerUtil.getFilteredUser(vForm.isWithLogin(),vForm.getSelectedUser());
             }
-            else if(!vForm.getFilteredTeam().equals("-1") && vForm.getSelectedUser() == -1 ){
+            else if(!vForm.getFilteredTeam().equals("-1")){
                 logs = AuditLoggerUtil.getFilteredTeam(vForm.isWithLogin(),vForm.getFilteredTeam());
           }
-            else if(!vForm.getFilteredTeam().equals("-1") && vForm.getSelectedUser() != -1 ) {
-                logs = AuditLoggerUtil.getFilteredUserAndTeam(vForm.isWithLogin(),vForm.getSelectedUser(),vForm.getFilteredTeam()); 
+
             }
-            else if(vForm.getDateFrom() != null && vForm.getDateTo() != null) {
-                logs = AuditLoggerUtil.getFilterByDate(vForm.isWithLogin(),vForm.getDateFrom(),vForm.getDateTo());
+            else if(vForm.isWithDate() == true) {
+                if(vForm.getSelectedUser() != -1){ 
+                    Date dateFrom = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("date"));
+                    Date dateTo = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("dateToText"));
+                    logs = AuditLoggerUtil.getFilterUserByDate(vForm.isWithLogin(),vForm.getSelectedUser(),dateFrom, dateTo);
+                }  
             }
             }
+        else {
+            logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());  
+       }
         
         if (request.getParameter("sortBy")!=null){
             vForm.setSortBy(request.getParameter("sortBy"));
@@ -204,27 +212,6 @@ public class AuditLoggerManager extends MultiAction {
         }
         return  modeSelect(mapping, form, request, response);
     }
-    
-    
-    public ActionForward auditFilter(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        Collection<AmpAuditLogger> logs = null; 
-      AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
-      if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() !=null) {
-          if(vForm.getSelectedUser() != -1 && vForm.getFilteredTeam().equals("-1")){ 
-              logs = AuditLoggerUtil.getFilteredUser(vForm.isWithLogin(),vForm.getSelectedUser());
-          }
-          else if(!vForm.getFilteredTeam().equals("-1") && vForm.getSelectedUser() == -1 ){
-              logs = AuditLoggerUtil.getFilteredTeam(vForm.isWithLogin(),vForm.getFilteredTeam());
-        }
-          else if(!vForm.getFilteredTeam().equals("-1") && vForm.getSelectedUser() != -1 ) {
-              logs = AuditLoggerUtil.getFilteredUserAndTeam(vForm.isWithLogin(),vForm.getSelectedUser(),vForm.getFilteredTeam()); 
-          }
-          }
-      return mapping.findForward("forward");
-    }           
-      
     
     public ActionForward modeSelect(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         return mapping.findForward("forward");

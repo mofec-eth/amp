@@ -286,37 +286,20 @@ public class AuditLoggerUtil {
             throw new RuntimeException(ex);
         }
     }
-
-    public static Collection<AmpAuditLogger> getFilteredUserAndTeam(boolean withLogin, Long userid, String filteredTeam) {
-        try {
-            String qryStr = null;
-            if (!withLogin){
-                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
-                        + Constants.LOGIN_ACTION + "' and userid=:userid and teamname=:filteredTeam order by modifyDate desc";
-            } else {
-                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where and userid=:userid and teamname=:filteredTeam order by modifyDate desc";
-            }           
-            Query qry = PersistenceManager.getSession().createQuery(qryStr);
-            qry.setParameter("filteredTeam", filteredTeam);
-            qry.setParameter("userid", userid);
-            return qry.list();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
     
-    public static Collection<AmpAuditLogger> getFilterByDate(boolean withLogin, Date dateFrom, Date dateTo) {
+    public static Collection<AmpAuditLogger> getFilterUserByDate(boolean withLogin,Long userid, Date dateFrom, Date dateTo) {
         try {
             String qryStr = null;
             if (!withLogin){
                 qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
-                        + Constants.LOGIN_ACTION + "' and modifyDate>:dateFrom and modifyDate<:dateTo order by modifyDate desc";
+                        + Constants.LOGIN_ACTION + "' and userid=:userid and modifyDate BETWEEN :dateFrom AND :dateTo order by modifyDate desc";
             } else {
-                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where modifyDate>:dateFrom and modifyDate<:dateTo order by modifyDate desc";
+                qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where modifyDate BETWEEN :dateFrom AND :dateTo order by modifyDate desc";
             }
             Query qry = PersistenceManager.getSession().createQuery(qryStr);
-            qry.setParameter("modifyDate", dateFrom);
-            qry.setParameter("modifyDate", dateTo);
+            qry.setParameter("userid", userid);
+            qry.setParameter("dateFrom", dateFrom);
+            qry.setParameter("dateTo", dateTo);
             return qry.list();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
