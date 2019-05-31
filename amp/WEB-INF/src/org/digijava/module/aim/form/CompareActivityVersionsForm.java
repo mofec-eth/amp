@@ -37,6 +37,11 @@ public class CompareActivityVersionsForm extends ActionForm {
 
 
     private List<ActivityComparisonResult> activityComparisonResultList;
+    
+    private Long selectedUser;
+    private String filteredTeam;
+    private boolean withFilter;
+    
 
     public List<ActivityComparisonResult> getActivityComparisonResultList() {
         return this.activityComparisonResultList;
@@ -144,5 +149,29 @@ public class CompareActivityVersionsForm extends ActionForm {
 
     public Set<Map.Entry<String, List<CompareOutput>>> getOutputCollectionGroupedAsSet() {
         return this.outputCollectionGrouped.entrySet();
+    }
+    
+    public Long getSelectedUser() {
+        return selectedUser;
+    }
+
+    public void setSelectedUser(Long selectedUser) {
+        this.selectedUser = selectedUser;
+    }
+
+    public String getFilteredTeam() {
+        return filteredTeam;
+    }
+
+    public void setFilteredTeam(String filteredTeam) {
+        this.filteredTeam = filteredTeam;
+    }  
+
+    public boolean isWithFilter() {
+      return withFilter;
+    }
+
+    public void setWithFilter(boolean withFilter) {
+      this.withFilter = withFilter;
     }
 }

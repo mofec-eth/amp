@@ -67,24 +67,33 @@ public class AuditLoggerManager extends MultiAction {
                 vForm.setWithLogin(false);
             }
                 
-        }
+        }  
         
-        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() !=null) {
+        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
             if(vForm.isWithDate() == false) {
             if(vForm.getSelectedUser() != -1){ 
-                logs = AuditLoggerUtil.getFilteredUser(vForm.isWithLogin(),vForm.getSelectedUser());
+                logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),vForm.getSelectedUser(),null,null,null);
             }
             else if(!vForm.getFilteredTeam().equals("-1")){
-                logs = AuditLoggerUtil.getFilteredTeam(vForm.isWithLogin(),vForm.getFilteredTeam());
+                logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),null,vForm.getFilteredTeam(),null,null);
           }
-
+            else if(vForm.getSelectedUser() == -1 || vForm.getFilteredTeam().equals("-1")) {
+                logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());   
+            }
             }
             else if(vForm.isWithDate() == true) {
+                if (request.getParameter("date") != null) {
                 if(vForm.getSelectedUser() != -1){ 
                     Date dateFrom = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("date"));
                     Date dateTo = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("dateToText"));
-                    logs = AuditLoggerUtil.getFilterUserByDate(vForm.isWithLogin(),vForm.getSelectedUser(),dateFrom, dateTo);
-                }  
+                    logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),vForm.getSelectedUser(),null,dateFrom, dateTo);
+                } 
+                else if(!vForm.getFilteredTeam().equals("-1")){
+                    Date dateFrom = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("date"));
+                    Date dateTo = new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("dateToText"));
+                    logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),null,vForm.getFilteredTeam(),dateFrom, dateTo);   
+                }
+                }
             }
             }
         else {
@@ -94,7 +103,7 @@ public class AuditLoggerManager extends MultiAction {
         if (request.getParameter("sortBy")!=null){
             vForm.setSortBy(request.getParameter("sortBy"));
         }
-        
+           
         vForm.setUserList(AmpUserUtil.getAllUsers(false));
         
         if(vForm.getSortBy()!=null){

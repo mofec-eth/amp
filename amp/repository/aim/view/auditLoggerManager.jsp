@@ -68,12 +68,20 @@ function submitClean(){
 }
 
 function submitFilter() {
-	document.aimAuditLoggerManagerForm.selectedUser.value = document.getElementById("userId").value;
-	document.aimAuditLoggerManagerForm.filteredTeam.value = document.getElementById("teamId").value;
-    log = document.getElementById("date").checked;
-	<digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?withDate=" />
-	document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
-	document.aimAuditLoggerManagerForm.submit();
+	  if (document.getElementById("date").checked==true && document.getElementById("DateFromText").value=="" && document.getElementById("DateToText").value==""){
+			alert("Please enter valid Date");
+			}
+	  else {
+		    log = document.getElementById("date").checked;
+			<digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?withDate=" />
+			document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
+//			document.aimAuditLoggerManagerForm.filterByDate.value = document.getElementById("DateFromText").value;
+		   document.getElementById("filter").checked=true;
+		   if(document.getElementById("filter").checked){
+		   alert("checked");
+		   }
+			document.aimAuditLoggerManagerForm.submit();
+	  }
 }
 
 function toggleLoggs(){
@@ -187,9 +195,13 @@ function toggleFilterSettings(){
 	}
 }
 
-function reset() {
+function resetSearch() {
 	document.getElementById("userId").selectedIndex = 0;
 	document.getElementById("teamId").selectedIndex = 0;
+	document.getElementById("DateFromText").value="";
+	document.getElementById("DateToText").value="";
+    document.aimAuditLoggerManagerForm.action = "/aim/auditLoggerManager.do?action=reset";
+    document.aimAuditLoggerManagerForm.submit();
 }
 
 function exportScorecard () {
@@ -204,7 +216,14 @@ function viewDifferences(activityOneId) {
 }
 
 function compareAll(){
+	 if(document.getElementById("filter").checked){
+		   alert("checked");
+		   }
     document.getElementById("compPrevForm").target = "_blank";
+    var team = document.getElementById("teamId").value;
+    alert(team);
+ //   document.aimCompareActivityVersionsForm.selectedUser.value = document.getElementById("userId").value;
+    document.aimCompareActivityVersionsForm.filteredTeam.value = team;
     document.aimCompareActivityVersionsForm.method.value = "compareAll";
     document.aimCompareActivityVersionsForm.submit();
 }
@@ -217,7 +236,6 @@ function compareAll(){
 <!-- End of Logo -->
 <digi:form action="/auditLoggerManager.do" method="post">
 <input type="hidden" name="withLogin">
-<input type="hidden" name="method" id="method" />
 <center>
 <div id="auditloggermanagercontainer">
 <table cellpadding="0" cellspacing="0">
@@ -327,21 +345,21 @@ function compareAll(){
                                  <table cellpadding="2" cellspacing="2" border="0" width="250px">
                                  <tr>
                                  	<td align="right">
-                                 	<strong><digi:trn>Filter by User:</digi:trn>&nbsp;&nbsp;</strong>
+                                 	<strong><digi:trn>User:</digi:trn>&nbsp;&nbsp;</strong>
                                 	</td>
                                 	<td>
                                     <html:select property="selectedUser" styleClass="inp-text" styleId="userId">
-                                 	<html:option value="-1">Select User </html:option>
+                                 	<html:option value="-1"><digi:trn>Select User</digi:trn> </html:option>
                                  	<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
                                  	</html:select>
                                  	</td> 
                                  	<tr>
                                  	<td align="right">
-                                 	<strong><digi:trn>Filter by Team:</digi:trn>&nbsp;&nbsp;</strong>
+                                 	<strong><digi:trn>Team:</digi:trn>&nbsp;&nbsp;</strong>
                                 	</td>
                                 	<td>
                                  	<html:select property="filteredTeam" styleClass="inp-text" styleId="teamId">
-                                 	<html:option value="-1">Select Team </html:option>
+                                 	<html:option value="-1"><digi:trn>Select Team </digi:trn></html:option>
                                 	<html:options property="teamList"></html:options>
                                  	</html:select>
                                  	</td>
@@ -349,7 +367,7 @@ function compareAll(){
                                     <tr>
                                  	<td align="right">
                                  	<c:set var="dateTr">
-							        <digi:trn>Filter by date:</digi:trn>
+							        <digi:trn>Date:</digi:trn>
 						            </c:set>
 				  <c:if test="${aimAuditLoggerManagerForm.withDate==true }">
 						<input type="checkbox" id="date" onchange="dateFilter()" checked="checked">${dateTr}
@@ -358,7 +376,7 @@ function compareAll(){
 						<input type="checkbox" id="date" onchange="dateFilter()">${dateTr}
 					</c:if>
                                  	<div id="dateForm" class="dateForm" style="display:none">
-                                 	<p>From date:</p>
+                                 	<p><digi:trn>From:</digi:trn></p>
                                  	<input type="text" name="date" id="DateFromText" class="inp-text">
 	                                <a id="date2" href='javascript:pickDateById2("dateForm","DateFromText",true,"tl")'>
 											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
@@ -366,7 +384,7 @@ function compareAll(){
 										<a id="clear2" href='javascript:clearDate("DateFromText")'>
 											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
 										</a>
-                                 	<p>To date:</p>
+                                 	<p><digi:trn>To:</digi:trn></p>
                                  	<input type="text" name="dateToText" id="DateToText" class="inp-text">
                                        <a id="date2" href='javascript:pickDateById2("dateForm","DateToText",true,"tl")'>
 											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
@@ -381,13 +399,12 @@ function compareAll(){
                                 	<td align="right">
                                  		<input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>">
                                  		&nbsp;
-									</td>
-									
-									<td align="left">
-									
-																			<input class="dr-menu" type="button" value="Reset" onclick="document.aimAuditLoggerManagerForm.reset();reset()">
+									</td>									
+									<td align="left">									
+									<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();resetSearch()">
 									</td>
                                  </tr>
+						<input type="checkbox" id="filter" style='display:none;'>
                                  </table>
                                  </div>
 									</div>                        

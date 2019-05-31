@@ -352,9 +352,16 @@ public class CompareActivityVersions extends DispatchAction {
                                     HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
+            if(vForm.getSelectedUser() != -1){ 
+                vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(vForm.getSelectedUser()));    
+            } 
+        }
+        else {
         vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped());
+        }
 
         return mapping.findForward("forward");
     }
-
+    
 }

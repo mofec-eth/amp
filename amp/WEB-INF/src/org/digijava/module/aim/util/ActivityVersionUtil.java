@@ -724,6 +724,45 @@ public class ActivityVersionUtil {
         return activityComparisonResults;
 
     }
+    
+    public static List<ActivityComparisonResult> getOutputCollectionGrouped(Long userId) {
+
+        List<ActivityComparisonResult> activityComparisonResults = new ArrayList<>();
+
+        List<Object[]> activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId);
+
+        for (int startIndex = 0; startIndex < activitiesFromAuditLogger.size(); startIndex += AUDIT_LOGGER_BATCH_SIZE) {
+
+            int endIndex = Math.min(activitiesFromAuditLogger.size(), startIndex + AUDIT_LOGGER_BATCH_SIZE);
+
+            List<Object[]> activityComparisonResultsSubList = activitiesFromAuditLogger.subList(startIndex, endIndex);
+
+            ActivityComparisonContext context = new ActivityComparisonContext(TLSUtils.getSite().getId(),
+                    TLSUtils.getSite().getSiteId(), TLSUtils.getEffectiveLangCode());
+
+            List<CompletableFuture<ActivityComparisonResult>> projectsToBePosted =
+                    activityComparisonResultsSubList.stream()
+                            .map(activityObj -> processComparison(activityObj, context)).collect(Collectors.toList());
+
+            List<ActivityComparisonResult> result =
+                    projectsToBePosted.stream()
+                            .map(CompletableFuture::join)
+                            .collect(Collectors.toList());
+
+            activityComparisonResults.addAll(result);
+        }
+
+        activityComparisonResults.sort(new Comparator<ActivityComparisonResult>() {
+
+            @Override
+            public int compare(ActivityComparisonResult o1, ActivityComparisonResult o2) {
+                return o1.getAmpAuditLoggerId().compareTo(o2.getAmpAuditLoggerId());
+            }
+        });
+
+        return activityComparisonResults;
+
+    }
     public static CompletableFuture<ActivityComparisonResult> processComparison(Object[] activityObject,
                                                                                 ActivityComparisonContext context) {
 
