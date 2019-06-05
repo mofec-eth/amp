@@ -684,52 +684,30 @@ public class ActivityVersionUtil {
             }
         }
     }
-
-
-    public static List<ActivityComparisonResult> getOutputCollectionGrouped() {
-
-        List<ActivityComparisonResult> activityComparisonResults = new ArrayList<>();
-
-        List<Object[]> activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger();
-
-        for (int startIndex = 0; startIndex < activitiesFromAuditLogger.size(); startIndex += AUDIT_LOGGER_BATCH_SIZE) {
-
-            int endIndex = Math.min(activitiesFromAuditLogger.size(), startIndex + AUDIT_LOGGER_BATCH_SIZE);
-
-            List<Object[]> activityComparisonResultsSubList = activitiesFromAuditLogger.subList(startIndex, endIndex);
-
-            ActivityComparisonContext context = new ActivityComparisonContext(TLSUtils.getSite().getId(),
-                    TLSUtils.getSite().getSiteId(), TLSUtils.getEffectiveLangCode());
-
-            List<CompletableFuture<ActivityComparisonResult>> projectsToBePosted =
-                    activityComparisonResultsSubList.stream()
-                            .map(activityObj -> processComparison(activityObj, context)).collect(Collectors.toList());
-
-            List<ActivityComparisonResult> result =
-                    projectsToBePosted.stream()
-                            .map(CompletableFuture::join)
-                            .collect(Collectors.toList());
-
-            activityComparisonResults.addAll(result);
-        }
-
-        activityComparisonResults.sort(new Comparator<ActivityComparisonResult>() {
-
-            @Override
-            public int compare(ActivityComparisonResult o1, ActivityComparisonResult o2) {
-                return o1.getAmpAuditLoggerId().compareTo(o2.getAmpAuditLoggerId());
-            }
-        });
-
-        return activityComparisonResults;
-
-    }
     
-    public static List<ActivityComparisonResult> getOutputCollectionGrouped(Long userId) {
-
+    public static List<ActivityComparisonResult> getOutputCollectionGrouped(Long userId, String team, Date fromDate, Date toDate ) {
+        List<Object[]> activitiesFromAuditLogger = null;
         List<ActivityComparisonResult> activityComparisonResults = new ArrayList<>();
-
-        List<Object[]> activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId);
+        
+        if (userId !=null) {
+            if(fromDate !=null && toDate != null) {
+                activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId, null, fromDate, toDate);  
+            }
+            else {
+         activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId, null, null, null);
+            }
+        }
+        else if (team !=null) {
+            if(fromDate !=null && toDate != null) {
+                activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(null, team, fromDate, toDate);    
+            }
+            else {
+         activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(null, team, null, null);
+            }
+        }
+        else {
+            activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger();
+        }
 
         for (int startIndex = 0; startIndex < activitiesFromAuditLogger.size(); startIndex += AUDIT_LOGGER_BATCH_SIZE) {
 

@@ -68,21 +68,8 @@ function submitClean(){
 }
 
 function submitFilter() {
-	  if (document.getElementById("date").checked==true && document.getElementById("DateFromText").value=="" && document.getElementById("DateToText").value==""){
-			alert("Please enter valid Date");
-			}
-	  else {
-		    log = document.getElementById("date").checked;
-			<digi:context name="cleanurl" property="context/module/moduleinstance/auditLoggerManager.do?withDate=" />
-			document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
-//			document.aimAuditLoggerManagerForm.filterByDate.value = document.getElementById("DateFromText").value;
-		   document.getElementById("filter").checked=true;
-		   if(document.getElementById("filter").checked){
-		   alert("checked");
-		   }
 			document.aimAuditLoggerManagerForm.submit();
 	  }
-}
 
 function toggleLoggs(){
 	log = document.getElementById("login").checked;
@@ -90,17 +77,6 @@ function toggleLoggs(){
 	document.aimAuditLoggerManagerForm.action = "<%=cleanurl%>"+log;
 	document.aimAuditLoggerManagerForm.target = "_self";
 	document.aimAuditLoggerManagerForm.submit();
-}
-
-function dateFilter(){
-	if(document.getElementById("date").checked == true){
-		document.getElementById('dateForm').style="display:visible";
-		document.aimAuditLoggerManagerForm.withDate.value = "true";
-		document.aimAuditLoggerManagerForm.submit();
-	}
-	if(document.getElementById("date").checked == false){
-		document.getElementById('dateForm').style="display:none";
-	}
 }
 
 function submitExport() {
@@ -198,8 +174,8 @@ function toggleFilterSettings(){
 function resetSearch() {
 	document.getElementById("userId").selectedIndex = 0;
 	document.getElementById("teamId").selectedIndex = 0;
-	document.getElementById("DateFromText").value="";
-	document.getElementById("DateToText").value="";
+	document.getElementById("dateFromText").value="";
+	document.getElementById("dateToText").value="";
     document.aimAuditLoggerManagerForm.action = "/aim/auditLoggerManager.do?action=reset";
     document.aimAuditLoggerManagerForm.submit();
 }
@@ -216,14 +192,13 @@ function viewDifferences(activityOneId) {
 }
 
 function compareAll(){
-	 if(document.getElementById("filter").checked){
-		   alert("checked");
-		   }
     document.getElementById("compPrevForm").target = "_blank";
+    var user = document.getElementById("userId").value;
     var team = document.getElementById("teamId").value;
-    alert(team);
- //   document.aimCompareActivityVersionsForm.selectedUser.value = document.getElementById("userId").value;
+    document.aimCompareActivityVersionsForm.selectedUser.value = user;
     document.aimCompareActivityVersionsForm.filteredTeam.value = team;
+    document.aimCompareActivityVersionsForm.dateFrom.value = document.getElementById("dateFromText").value;
+    document.aimCompareActivityVersionsForm.dateTo.value = document.getElementById("dateToText").value;
     document.aimCompareActivityVersionsForm.method.value = "compareAll";
     document.aimCompareActivityVersionsForm.submit();
 }
@@ -369,27 +344,21 @@ function compareAll(){
                                  	<c:set var="dateTr">
 							        <digi:trn>Date:</digi:trn>
 						            </c:set>
-				  <c:if test="${aimAuditLoggerManagerForm.withDate==true }">
-						<input type="checkbox" id="date" onchange="dateFilter()" checked="checked">${dateTr}
-					</c:if>
-					<c:if test="${aimAuditLoggerManagerForm.withDate==false }">
-						<input type="checkbox" id="date" onchange="dateFilter()">${dateTr}
-					</c:if>
-                                 	<div id="dateForm" class="dateForm" style="display:none">
+                                 	<div id="dateForm" class="dateForm">
                                  	<p><digi:trn>From:</digi:trn></p>
-                                 	<input type="text" name="date" id="DateFromText" class="inp-text">
-	                                <a id="date2" href='javascript:pickDateById2("dateForm","DateFromText",true,"tl")'>
+                                 	<html:text property="dateFrom" styleClass="inp-text" readonly="true" styleId="dateFromText"/>
+	                                <a id="date2" href='javascript:pickDateById2("dateForm","dateFromText",true,"tl")'>
 											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
 										</a>
-										<a id="clear2" href='javascript:clearDate("DateFromText")'>
+										<a id="clear2" href='javascript:clearDate("dateFromText")'>
 											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
 										</a>
                                  	<p><digi:trn>To:</digi:trn></p>
-                                 	<input type="text" name="dateToText" id="DateToText" class="inp-text">
-                                       <a id="date2" href='javascript:pickDateById2("dateForm","DateToText",true,"tl")'>
+                                 	<html:text property="dateTo" styleClass="inp-text" readonly="true" styleId="dateToText"/>
+                                       <a id="date2" href='javascript:pickDateById2("dateForm","dateToText",true,"tl")'>
 											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
 										</a>
-										<a id="clear2" href='javascript:clearDate("DateToText")'>
+										<a id="clear2" href='javascript:clearDate("dateToText")'>
 											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
 										</a>
                                  	</div> 
@@ -404,7 +373,6 @@ function compareAll(){
 									<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();resetSearch()">
 									</td>
                                  </tr>
-						<input type="checkbox" id="filter" style='display:none;'>
                                  </table>
                                  </div>
 									</div>                        
@@ -741,4 +709,8 @@ function compareAll(){
 <digi:form styleId="compPrevForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm" target="_self">
 	<input type="hidden" name="activityOneId" id="activityOneId" />
 	<input type="hidden" name="method" id="method" />
+	<input type="hidden" name="selectedUser" id="selectedUser" />
+	<input type="hidden" name="filteredTeam" id="filteredTeam" />
+	<input type="hidden" name="dateFrom" id="dateFrom" />
+	<input type="hidden" name="dateTo" id="dateTo" />
 </digi:form>

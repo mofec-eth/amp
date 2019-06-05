@@ -40,8 +40,25 @@ public class CompareActivityVersionsForm extends ActionForm {
     
     private Long selectedUser;
     private String filteredTeam;
-    private boolean withFilter;
+    private String dateFrom;
+    private String dateTo;
     
+
+    public String getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(String dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public String getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(String dateTo) {
+        this.dateTo = dateTo;
+    }
 
     public List<ActivityComparisonResult> getActivityComparisonResultList() {
         return this.activityComparisonResultList;
@@ -166,12 +183,4 @@ public class CompareActivityVersionsForm extends ActionForm {
     public void setFilteredTeam(String filteredTeam) {
         this.filteredTeam = filteredTeam;
     }  
-
-    public boolean isWithFilter() {
-      return withFilter;
-    }
-
-    public void setWithFilter(boolean withFilter) {
-      this.withFilter = withFilter;
-    }
 }

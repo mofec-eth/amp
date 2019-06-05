@@ -38,7 +38,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.DateType;
-import org.hibernate.type.StringType;
+import org.hibernate.type.StringType; 
 /**
  * ActivityUtil is the persister class for all activity related
  * entities
@@ -46,7 +46,8 @@ import org.hibernate.type.StringType;
  * @author Priyajith
  */
 public class AuditLoggerUtil {
-
+    
+    private static String query;
     private static Logger logger = Logger.getLogger(AuditLoggerUtil.class);
     public static void logObject(HttpServletRequest request,
             LoggerIdentifiable o, String action,String additionalDetails) throws DgException { 
@@ -264,7 +265,8 @@ public class AuditLoggerUtil {
             String qryStr = null;
             Query qry = null;
             if(userid != null) {
-              if(dateFrom != null) {
+              if(dateFrom != null || dateTo !=null) {
+                  if (dateFrom != null && dateTo !=null) {
                   if (!withLogin){
                       qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
                               + Constants.LOGIN_ACTION + "' and userid=:userid and modifyDate >:dateFrom and modifyDate <:dateTo order by modifyDate desc";
@@ -276,7 +278,30 @@ public class AuditLoggerUtil {
                   qry.setParameter("dateFrom", dateFrom);
                   qry.setParameter("dateTo", dateTo);   
               }
-              else if(dateFrom == null) {
+                  else if(dateFrom != null && dateTo ==null) {
+                      if (!withLogin){
+                          qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                                  + Constants.LOGIN_ACTION + "' and userid=:userid and modifyDate >:dateFrom order by modifyDate desc";
+                      } else {
+                          qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where userid=:userid and modifyDate >:dateFrom order by modifyDate desc";
+                      }
+                      qry = PersistenceManager.getSession().createQuery(qryStr);
+                      qry.setParameter("userid", userid);
+                      qry.setParameter("dateFrom", dateFrom);  
+                  }
+                  else if(dateFrom == null && dateTo !=null) {
+                      if (!withLogin){
+                          qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                                  + Constants.LOGIN_ACTION + "' and userid=:userid and modifyDate <:dateTo order by modifyDate desc";
+                      } else {
+                          qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where userid=:userid and modifyDate <:dateTo order by modifyDate desc";
+                      }
+                      qry = PersistenceManager.getSession().createQuery(qryStr);
+                      qry.setParameter("userid", userid);
+                      qry.setParameter("dateTo", dateTo); 
+                  }
+              }
+              else if(dateFrom == null && dateTo == null) {
             if (!withLogin){
                 qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
                         + Constants.LOGIN_ACTION + "' and userid=:userid order by modifyDate desc";
@@ -288,7 +313,8 @@ public class AuditLoggerUtil {
             }
             }
             if(filteredTeam != null) {
-                if (dateFrom != null) {
+                if (dateFrom != null || dateTo !=null) {
+                    if (dateFrom != null && dateTo !=null) {
                  if (!withLogin){
                         qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
                                 + Constants.LOGIN_ACTION + "' and teamname=:filteredTeam and modifyDate >:dateFrom and modifyDate <:dateTo order by modifyDate desc";
@@ -299,6 +325,29 @@ public class AuditLoggerUtil {
                     qry.setParameter("filteredTeam", filteredTeam);
                     qry.setParameter("dateFrom", dateFrom);
                     qry.setParameter("dateTo", dateTo);    
+                }
+                    else if(dateFrom != null && dateTo ==null) {
+                        if (!withLogin){
+                            qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                                    + Constants.LOGIN_ACTION + "' and teamname=:filteredTeam and modifyDate >:dateFrom order by modifyDate desc";
+                        } else {
+                            qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where teamname=:filteredTeam and modifyDate >:dateFrom order by modifyDate desc";
+                        }
+                        qry = PersistenceManager.getSession().createQuery(qryStr);
+                        qry.setParameter("filteredTeam", filteredTeam);
+                        qry.setParameter("dateFrom", dateFrom); 
+                    }
+                    else if(dateFrom == null && dateTo !=null) {
+                        if (!withLogin){
+                            qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
+                                    + Constants.LOGIN_ACTION + "' and teamname=:filteredTeam and modifyDate <:dateTo order by modifyDate desc";
+                        } else {
+                            qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where teamname=:filteredTeam and modifyDate <:dateTo order by modifyDate desc";
+                        }
+                        qry = PersistenceManager.getSession().createQuery(qryStr);
+                        qry.setParameter("filteredTeam", filteredTeam);
+                        qry.setParameter("dateTo", dateTo);   
+                    }
                 }
                 else {
                 if (!withLogin){
@@ -472,12 +521,12 @@ public class AuditLoggerUtil {
 
 
     public static List<Object[]> getListOfActivitiesFromAuditLogger() {
-        String query = "select * from ( "
+        query = "select * from ( "
                 + " select  aav.amp_activity_id current_id ,  "
                 + " lead(aav.amp_activity_id, 1) "
                 + " over(partition by aav.amp_activity_group_id order by aav.amp_activity_id desc) previous_id, "
                 + " aal.objectname, aav.amp_activity_group_id, "
-                + " aal.id  from amp_activity_version aav "
+                + " aal.id from amp_activity_version aav "
                 + " left join amp_audit_logger aal on "
                 + " (aal.objecttype ='org.digijava.module.aim.dbentity.AmpActivityVersion' "
                 + "  and cast (aal.objectId AS INTEGER) = aav.amp_activity_id"
@@ -492,15 +541,105 @@ public class AuditLoggerUtil {
         return sqlQuery.list();
     }
     
-    public static List<Object[]> getListOfActivitiesFromAuditLogger(Long userid) {
-        try {
-        String qryStr = "select f from " + AmpAuditLogger.class.getName() + " f where action<>'"
-                + Constants.LOGIN_ACTION + "' and userid=:userid order by modifyDate desc";
-        return PersistenceManager.getSession().createQuery(qryStr).setParameter("userid", userid).list();
-    } catch (Exception ex) {
-        throw new RuntimeException(ex);
-    }                
+    public static List<Object[]> getListOfActivitiesFromAuditLogger(Long userid, String team, Date fromdate, Date todate) {
+        SQLQuery sqlQuery = null;
+        List results = null;
+        Session session = PersistenceManager.getSession();
+        if (fromdate != null && todate !=null) {
+            if (userid !=null) {
+            String query = "select * from ( "
+                    + " select  aav.amp_activity_id current_id ,  "
+                    + " lead(aav.amp_activity_id, 1) "
+                    + " over(partition by aav.amp_activity_group_id order by aav.amp_activity_id desc) previous_id, "
+                    + " aal.objectname, aav.amp_activity_group_id, "
+                    + " aal.id  from amp_activity_version aav "
+                    + " left join amp_audit_logger aal on "
+                    + " (aal.objecttype ='org.digijava.module.aim.dbentity.AmpActivityVersion' "
+                    + "  and cast (aal.objectId AS INTEGER) = aav.amp_activity_id"
+                    + "  and aal.userid=:userid "
+                    + "  and modifydate>:fromdate and modifydate<:todate "
+                    + "   and trim(aal.detail) ='approved') "
+                    + "   and aav.approval_status in ('approved','startedapproved') "
+                    + " order by amp_activity_group_id desc "
+                    + " ) t where t.id is not null"
+                    + " and t.previous_id is not null";  
+            
+            sqlQuery = session.createSQLQuery(query);
+            sqlQuery.setParameter("userid", userid);
+            sqlQuery.setParameter("fromdate", fromdate);
+            sqlQuery.setParameter("todate", todate);
+        }
+            else if (team != null) {
+                String query = "select * from ( "
+                        + " select  aav.amp_activity_id current_id ,  "
+                        + " lead(aav.amp_activity_id, 1) "
+                        + " over(partition by aav.amp_activity_group_id order by aav.amp_activity_id desc) previous_id, "
+                        + " aal.objectname, aav.amp_activity_group_id, "
+                        + " aal.id  from amp_activity_version aav "
+                        + " left join amp_audit_logger aal on "
+                        + " (aal.objecttype ='org.digijava.module.aim.dbentity.AmpActivityVersion' "
+                        + "  and cast (aal.objectId AS INTEGER) = aav.amp_activity_id"
+                        + "  and aal.teamname=:team "
+                        + "and modifydate>:fromdate and modifydate<:todate "
+                        + "   and trim(aal.detail) ='approved') "
+                        + "   and aav.approval_status in ('approved','startedapproved') "
+                        + " order by amp_activity_group_id desc "
+                        + " ) t where t.id is not null"
+                        + " and t.previous_id is not null";
+                
+                sqlQuery = session.createSQLQuery(query);
+                sqlQuery.setParameter("team", team); 
+                sqlQuery.setParameter("fromdate", fromdate);
+                sqlQuery.setParameter("todate", todate);
+            }
+        }
+        else { 
+        if (userid !=null) { 
+//            Criteria criteria = session.createCriteria(query);
+//            criteria.add(Restrictions.eq("userid", userid));
+//            results = criteria.list(); 
+            String query = "select * from ( "
+                    + " select  aav.amp_activity_id current_id ,  "
+                    + " lead(aav.amp_activity_id, 1) "
+                    + " over(partition by aav.amp_activity_group_id order by aav.amp_activity_id desc) previous_id, "
+                    + " aal.objectname, aav.amp_activity_group_id, "
+                    + " aal.id  from amp_activity_version aav "
+                    + " left join amp_audit_logger aal on "
+                    + " (aal.objecttype ='org.digijava.module.aim.dbentity.AmpActivityVersion' "
+                    + "  and cast (aal.objectId AS INTEGER) = aav.amp_activity_id"
+                    + "  and aal.userid=:userid "
+                    + "   and trim(aal.detail) ='approved') "
+                    + "   and aav.approval_status in ('approved','startedapproved') "
+                    + " order by amp_activity_group_id desc "
+                    + " ) t where t.id is not null"
+                    + " and t.previous_id is not null";
+            sqlQuery = session.createSQLQuery(query);
+            sqlQuery.setParameter("userid", userid);
+        }
+        else if (team != null) {
+            String query = "select * from ( "
+                    + " select  aav.amp_activity_id current_id ,  "
+                    + " lead(aav.amp_activity_id, 1) "
+                    + " over(partition by aav.amp_activity_group_id order by aav.amp_activity_id desc) previous_id, "
+                    + " aal.objectname, aav.amp_activity_group_id, "
+                    + " aal.id  from amp_activity_version aav "
+                    + " left join amp_audit_logger aal on "
+                    + " (aal.objecttype ='org.digijava.module.aim.dbentity.AmpActivityVersion' "
+                    + "  and cast (aal.objectId AS INTEGER) = aav.amp_activity_id"
+                    + "  and aal.teamname=:team "
+                    + "   and trim(aal.detail) ='approved') "
+                    + "   and aav.approval_status in ('approved','startedapproved') "
+                    + " order by amp_activity_group_id desc "
+                    + " ) t where t.id is not null"
+                    + " and t.previous_id is not null";
+            
+            sqlQuery = session.createSQLQuery(query);
+            sqlQuery.setParameter("team", team);
+        }
+        }
+        return sqlQuery.list();  
     }
+        
 
     /**
      * This class is used for sorting by name.

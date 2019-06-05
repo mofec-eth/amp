@@ -29,26 +29,9 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private List<Long> userId;
     private List<String> teamList;
     private String filteredTeam;
-    private Date filterByDate;
-    private String method;
-    private boolean withDate;
-    
+    private String dateFrom;
+    private String dateTo;
 
-    public boolean isWithDate() {
-        return withDate;
-    }
-
-    public void setWithDate(boolean withDate) {
-        this.withDate = withDate;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
 
     public String getUseraction() {
         return useraction;
@@ -169,12 +152,21 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     public void setFilteredTeam(String filteredTeam) {
         this.filteredTeam = filteredTeam;
     }
-    public Date getFilterByDate() {
-        return filterByDate;
+
+    public String getDateFrom() {
+        return dateFrom;
     }
 
-    public void setFilterByDate(Date filterByDate) {
-        this.filterByDate = filterByDate;
+    public void setDateFrom(String dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public String getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(String dateTo) {
+        this.dateTo = dateTo;
     }
 
 }

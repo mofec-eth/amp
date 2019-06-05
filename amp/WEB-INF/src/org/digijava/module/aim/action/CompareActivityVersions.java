@@ -1,4 +1,5 @@
 package org.digijava.module.aim.action;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,8 +31,10 @@ import org.digijava.module.aim.dbentity.AmpActivityFields;
 import org.digijava.module.aim.dbentity.AmpActivityGroup;
 import org.digijava.module.aim.dbentity.AmpActivityVersion;
 import org.digijava.module.aim.dbentity.AmpTeamMember;
+import org.digijava.module.aim.form.AuditLoggerManagerForm;
 import org.digijava.module.aim.form.CompareActivityVersionsForm;
 import org.digijava.module.aim.helper.Constants;
+import org.digijava.module.aim.helper.DateConversion;
 import org.digijava.module.aim.helper.TeamMember;
 import org.digijava.module.aim.util.versioning.ActivityComparisonContext;
 import org.digijava.module.aim.util.ActivityUtil;
@@ -352,13 +355,31 @@ public class CompareActivityVersions extends DispatchAction {
                                     HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
-        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
-            if(vForm.getSelectedUser() != -1){ 
-                vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(vForm.getSelectedUser()));    
+        if (vForm.getSelectedUser() != -1 || !vForm.getFilteredTeam().equals("-1")) {
+            Date dateFrom = DateConversion.getDate(vForm.getDateFrom());
+            Date dateTo = DateConversion.getDate(vForm.getDateTo()); 
+            if(vForm.getSelectedUser() != -1){
+                if(dateFrom != null || dateTo !=null) {
+                    if (dateFrom != null && dateTo !=null) {
+                        vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(vForm.getSelectedUser(),null, dateFrom, dateTo));   
+  }
+                }
+                else {
+                vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(vForm.getSelectedUser(),null,null,null)); 
+                }
             } 
-        }
+            else if(!vForm.getFilteredTeam().equals("-1")){
+                if (dateFrom != null && dateTo !=null) {
+                    vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(null,vForm.getFilteredTeam(), dateFrom, dateTo));   
+}
+                else {
+                vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(null, vForm.getFilteredTeam(),null,null));
+                }
+            }
+        }        
+        
         else {
-        vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped());
+        vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(null,null,null,null));
         }
 
         return mapping.findForward("forward");
