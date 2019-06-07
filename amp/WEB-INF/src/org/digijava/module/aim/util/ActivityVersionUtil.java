@@ -685,29 +685,13 @@ public class ActivityVersionUtil {
         }
     }
     
-    public static List<ActivityComparisonResult> getOutputCollectionGrouped(Long userId, String team, Date fromDate, Date toDate ) {
-        List<Object[]> activitiesFromAuditLogger = null;
+    public static List<ActivityComparisonResult> getOutputCollectionGrouped(Long userId, String team,
+                                                                            Date fromDate, Date toDate) {
+        List<Object[]> activitiesFromAuditLogger;
         List<ActivityComparisonResult> activityComparisonResults = new ArrayList<>();
         
-        if (userId !=null) {
-            if(fromDate !=null && toDate != null) {
-                activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId, null, fromDate, toDate);  
-            }
-            else {
-         activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId, null, null, null);
-            }
-        }
-        else if (team !=null) {
-            if(fromDate !=null && toDate != null) {
-                activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(null, team, fromDate, toDate);    
-            }
-            else {
-         activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(null, team, null, null);
-            }
-        }
-        else {
-            activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger();
-        }
+
+        activitiesFromAuditLogger = AuditLoggerUtil.getListOfActivitiesFromAuditLogger(userId, team, fromDate, toDate);
 
         for (int startIndex = 0; startIndex < activitiesFromAuditLogger.size(); startIndex += AUDIT_LOGGER_BATCH_SIZE) {
 

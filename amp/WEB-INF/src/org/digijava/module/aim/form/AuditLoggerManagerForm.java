@@ -2,14 +2,11 @@ package org.digijava.module.aim.form;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-
-import org.apache.struts.action.ActionForm;
 
 import org.digijava.kernel.user.User;
 
-public class AuditLoggerManagerForm extends ActionForm implements Serializable{
+public class AuditLoggerManagerForm extends FilterAuditLoggerForm implements Serializable {
 
     
     private static final long serialVersionUID = -2614366966871314200L;
@@ -24,14 +21,9 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private String useraction;
     private String frecuency;
     private boolean withLogin;
-    private Long selectedUser;
-    private Collection<User> userList;    
     private List<Long> userId;
     private List<String> teamList;
-    private String filteredTeam;
-    private String dateFrom;
-    private String dateTo;
-
+    private Collection<User> userList;
 
     public String getUseraction() {
         return useraction;
@@ -131,42 +123,11 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
         this.userId = userId;
     }
 
-    public Long getSelectedUser() {
-        return selectedUser;
-    }
-    public void setSelectedUser(Long users) {
-        this.selectedUser = users;
-    }
-
-   public Collection<User> getUserList() {
+    public Collection<User> getUserList() {
         return userList;
-   }
+    }
 
     public void setUserList(Collection<User> userList) {
         this.userList = userList;
     }
-    public String getFilteredTeam() {
-        return filteredTeam;
-    }
-
-    public void setFilteredTeam(String filteredTeam) {
-        this.filteredTeam = filteredTeam;
-    }
-
-    public String getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(String dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public String getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(String dateTo) {
-        this.dateTo = dateTo;
-    }
-
 }

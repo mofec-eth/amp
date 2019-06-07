@@ -41,6 +41,27 @@
 .Hovered {
 	background-color:#a5bcf2;
 }
+.divTable{
+	display: table;
+	width: 100%;
+}
+.divTableRow {
+	display: table-row;
+}
+.divTableCellLeft{
+	text-align: right;
+	font-weight: bold;
+}
+.divTableCell {
+	display: table-cell;
+	padding: 3px 10px;
+	width: 50%;
+}
+.divTableBody {
+	display: table-row-group;
+}
+
+
 </style>
 <script language="javascript">
 
@@ -174,8 +195,8 @@ function toggleFilterSettings(){
 function resetSearch() {
 	document.getElementById("userId").selectedIndex = 0;
 	document.getElementById("teamId").selectedIndex = 0;
-	document.getElementById("dateFromText").value="";
-	document.getElementById("dateToText").value="";
+	document.getElementById("selectedDateFromText").value="";
+	document.getElementById("selectedDateToText").value="";
     document.aimAuditLoggerManagerForm.action = "/aim/auditLoggerManager.do?action=reset";
     document.aimAuditLoggerManagerForm.submit();
 }
@@ -196,9 +217,9 @@ function compareAll(){
     var user = document.getElementById("userId").value;
     var team = document.getElementById("teamId").value;
     document.aimCompareActivityVersionsForm.selectedUser.value = user;
-    document.aimCompareActivityVersionsForm.filteredTeam.value = team;
-    document.aimCompareActivityVersionsForm.dateFrom.value = document.getElementById("dateFromText").value;
-    document.aimCompareActivityVersionsForm.dateTo.value = document.getElementById("dateToText").value;
+    document.aimCompareActivityVersionsForm.selectedTeam.value = team;
+    document.aimCompareActivityVersionsForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
+    document.aimCompareActivityVersionsForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
     document.aimCompareActivityVersionsForm.method.value = "compareAll";
     document.aimCompareActivityVersionsForm.submit();
 }
@@ -316,64 +337,52 @@ function compareAll(){
 				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleFilterSettings();" id="displayFilterButton">
 				  <digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn> &gt;&gt;</span>
                                 &nbsp;<br>
-								<div style="display:none;background-color:#ffffff;padding:2px" id="currentFilterSettings" >
-                                 <table cellpadding="2" cellspacing="2" border="0" width="250px">
-                                 <tr>
-                                 	<td align="right">
-                                 	<strong><digi:trn>User:</digi:trn>&nbsp;&nbsp;</strong>
-                                	</td>
-                                	<td>
-                                    <html:select property="selectedUser" styleClass="inp-text" styleId="userId">
-                                 	<html:option value="-1"><digi:trn>Select User</digi:trn> </html:option>
-                                 	<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
-                                 	</html:select>
-                                 	</td> 
-                                 	<tr>
-                                 	<td align="right">
-                                 	<strong><digi:trn>Team:</digi:trn>&nbsp;&nbsp;</strong>
-                                	</td>
-                                	<td>
-                                 	<html:select property="filteredTeam" styleClass="inp-text" styleId="teamId">
-                                 	<html:option value="-1"><digi:trn>Select Team </digi:trn></html:option>
-                                	<html:options property="teamList"></html:options>
-                                 	</html:select>
-                                 	</td>
-                                 	</tr> 
-                                    <tr>
-                                 	<td align="right">
-                                 	<c:set var="dateTr">
-							        <digi:trn>Date:</digi:trn>
-						            </c:set>
-                                 	<div id="dateForm" class="dateForm">
-                                 	<p><digi:trn>From:</digi:trn></p>
-                                 	<html:text property="dateFrom" styleClass="inp-text" readonly="true" styleId="dateFromText"/>
-	                                <a id="date2" href='javascript:pickDateById2("dateForm","dateFromText",true,"tl")'>
-											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
-										</a>
-										<a id="clear2" href='javascript:clearDate("dateFromText")'>
-											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
-										</a>
-                                 	<p><digi:trn>To:</digi:trn></p>
-                                 	<html:text property="dateTo" styleClass="inp-text" readonly="true" styleId="dateToText"/>
-                                       <a id="date2" href='javascript:pickDateById2("dateForm","dateToText",true,"tl")'>
-											<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
-										</a>
-										<a id="clear2" href='javascript:clearDate("dateToText")'>
-											<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
-										</a>
-                                 	</div> 
-                                 	</td> 
-                                    </tr>                                                      
-                                 <tr>
-                                	<td align="right">
-                                 		<input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>">
-                                 		&nbsp;
-									</td>									
-									<td align="left">									
-									<input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();resetSearch()">
-									</td>
-                                 </tr>
-                                 </table>
+								<div style="display:none;background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
+									<div class="divTable">
+										<div class="divTableBody">
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><digi:trn>User:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedUser" styleClass="inp-text" styleId="userId">
+													<html:option value="-1"><digi:trn>Select User</digi:trn> </html:option>
+													<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
+												</html:select></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><digi:trn>Team:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedTeam" styleClass="inp-text" styleId="teamId">
+													<html:option value="-1"><digi:trn>Select Team </digi:trn></html:option>
+													<html:options property="teamList"></html:options>
+												</html:select></div>
+											</div>
+											<c:set var="dateTr">
+												<digi:trn>Date</digi:trn>
+											</c:set>
+											<div class="divTableRow" >
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>From</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateFrom"><html:text property="selectedDateFrom" styleClass="inp-text" readonly="true" styleId="selectedDateFromText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateFrom","selectedDateFromText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateFromText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>To</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateTo">                                 	<html:text property="selectedDateTo" styleClass="inp-text" readonly="true" styleId="selectedDateToText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateTo","selectedDateToText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateToText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>"></div>
+												<div class="divTableCell"><input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();resetSearch()"></div>
+											</div>
+										</div>
+									</div>
                                  </div>
 									</div>                        
                             	</div>
@@ -593,7 +602,7 @@ function compareAll(){
 							<c:set target="${urlParamsFirst}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsFirst}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsFirst}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-							<c:set target="${urlParamsFirst}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+							<c:set target="${urlParamsFirst}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:firstpage">First Page</digi:trn>
 							</c:set>
@@ -605,7 +614,7 @@ function compareAll(){
 							<c:set target="${urlParamsPrevious}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsPrevious}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsPrevious}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-							<c:set target="${urlParamsPrevious}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+							<c:set target="${urlParamsPrevious}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:previouspage">Previous Page</digi:trn>
 							</c:set>|
@@ -624,7 +633,7 @@ function compareAll(){
 						<c:set target="${urlParams1}" property="page"><%=pages%></c:set>
 						<c:set target="${urlParams1}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 						<c:set target="${urlParams1}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-						<c:set target="${urlParams1}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+						<c:set target="${urlParams1}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 						<c:if test="${aimAuditLoggerManagerForm.currentPage == pages && aimAuditLoggerManagerForm.pagesSize > 1}">
 							<font color="#FF0000"><%=pages%></font>
 							|	
@@ -645,7 +654,7 @@ function compareAll(){
 							<c:set target="${urlParamsNext}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsNext}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsNext}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-							<c:set target="${urlParamsNext}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+							<c:set target="${urlParamsNext}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 							<c:set var="translation"> <digi:trn key="aim:nextpage">Next Page</digi:trn></c:set>
 							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}">
 								<span style="font-size: 8pt; font-family: Tahoma;"><digi:trn key="aim:next">Next</digi:trn></span>
@@ -657,7 +666,7 @@ function compareAll(){
 							<c:set target="${urlParamsLast}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-							<c:set target="${urlParamsLast}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 						</c:if>
 						
 						<c:if test="${aimAuditLoggerManagerForm.pagesSize < aimAuditLoggerManagerForm.pagesToShow}">
@@ -665,7 +674,7 @@ function compareAll(){
 							<c:set target="${urlParamsLast}" property="page" value="${aimAuditLoggerManagerForm.pagesSize}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
-							<c:set target="${urlParamsLast}" property="filteredTeam" value="${aimAuditLoggerManagerForm.filteredTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 						</c:if>
 						<c:set var="translation"><digi:trn key="aim:lastpage">Last Page</digi:trn></c:set>
 						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}">
@@ -710,7 +719,7 @@ function compareAll(){
 	<input type="hidden" name="activityOneId" id="activityOneId" />
 	<input type="hidden" name="method" id="method" />
 	<input type="hidden" name="selectedUser" id="selectedUser" />
-	<input type="hidden" name="filteredTeam" id="filteredTeam" />
-	<input type="hidden" name="dateFrom" id="dateFrom" />
-	<input type="hidden" name="dateTo" id="dateTo" />
+	<input type="hidden" name="selectedTeam" id="selectedTeam" />
+	<input type="hidden" name="selectedDateFrom" id="selectedDateFrom" />
+	<input type="hidden" name="selectedDateTo" id="selectedDateTo" />
 </digi:form>

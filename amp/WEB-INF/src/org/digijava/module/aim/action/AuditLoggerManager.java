@@ -4,10 +4,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,19 +24,18 @@ import org.dgfoundation.amp.utils.MultiAction;
 import org.digijava.kernel.util.RequestUtils;
 import org.digijava.module.aim.dbentity.AmpAuditLogger;
 import org.digijava.module.aim.form.AuditLoggerManagerForm;
-import org.digijava.module.aim.helper.DateConversion;
 import org.digijava.module.aim.util.AuditLoggerUtil;
 
-import org.digijava.kernel.util.UserUtils;
 import org.digijava.module.um.util.AmpUserUtil;
 
 public class AuditLoggerManager extends MultiAction {
-    
+    private static final Integer PAGES_TO_SHOW = 10;
+    private static final Integer TOTAL_RECORDS = 20;
+
     public ActionForward modePrepare(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
+                                     HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        
-        Collection<AmpAuditLogger> logs = null;        
+
         AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
         if (request.getParameter("clean") != null) {
             if (vForm.getUseraction().equalsIgnoreCase("delete")) {
@@ -67,42 +64,21 @@ public class AuditLoggerManager extends MultiAction {
                 vForm.setWithLogin(false);
             }
                 
-        }  
-        
-        if (vForm.getSelectedUser() != null || vForm.getFilteredTeam() != null) {
-            Date dateFrom = DateConversion.getDate(vForm.getDateFrom());
-            Date dateTo = DateConversion.getDate(vForm.getDateTo());
-            if(vForm.getDateFrom() == "" && vForm.getDateTo() =="") {
-            if(vForm.getSelectedUser() != -1){ 
-                logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),vForm.getSelectedUser(),null,null,null);
-            }
-            else if(!vForm.getFilteredTeam().equals("-1")){
-                logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),null,vForm.getFilteredTeam(),null,null);
-          }
-            else if(vForm.getSelectedUser() == -1 || vForm.getFilteredTeam().equals("-1")) {
-                logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());   
-            }
-            }
-            else if(vForm.getDateFrom() != "" || vForm.getDateTo() != "") {
-                if(vForm.getSelectedUser() != -1){                     
-                    logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),vForm.getSelectedUser(),null,dateFrom, dateTo);
-                } 
-                else if(!vForm.getFilteredTeam().equals("-1")){
-                    logs = AuditLoggerUtil.getFilteredAudit(vForm.isWithLogin(),null,vForm.getFilteredTeam(),dateFrom, dateTo);   
-                }
-                }               
-            }
-        else {
-            logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());  
-       }
-        
-        if (request.getParameter("sortBy")!=null){
+        }
+
+
+        vForm.populateEffectiveFilters();
+        Collection<AmpAuditLogger> logs = AuditLoggerUtil.getLogObjects(vForm.isWithLogin(),
+                vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(), vForm.getEffectiveDateFrom(),
+                vForm.getEffectiveDateTo());
+
+        if (request.getParameter("sortBy") != null) {
             vForm.setSortBy(request.getParameter("sortBy"));
         }
            
         vForm.setUserList(AmpUserUtil.getAllUsers(false));
-        
-        if(vForm.getSortBy()!=null){
+
+        if (vForm.getSortBy() != null) {
                     Long siteId = RequestUtils.getSiteDomain(request).getSite().getId();
                     String langCode = RequestUtils.getNavigationLanguage(request).getCode();
               if(vForm.getSortBy().equalsIgnoreCase("nameasc")){
@@ -176,8 +152,8 @@ public class AuditLoggerManager extends MultiAction {
         }
         vForm.setTeamList(AuditLoggerUtil.getTeamFromLog());
         
-        vForm.setPagesToShow(10);
-        int totalrecords=20;
+        vForm.setPagesToShow(PAGES_TO_SHOW);
+        int totalrecords = TOTAL_RECORDS;
         int page = 0;
         if (request.getParameter("page") == null) {
             page = 1;

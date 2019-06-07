@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.struts.action.ActionForm;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
 import org.digijava.module.aim.dbentity.AmpActivityVersion;
 import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 
-public class CompareActivityVersionsForm extends ActionForm {
+public class CompareActivityVersionsForm extends FilterAuditLoggerForm {
 
     private Long activityOneId;
 
@@ -37,28 +36,6 @@ public class CompareActivityVersionsForm extends ActionForm {
 
 
     private List<ActivityComparisonResult> activityComparisonResultList;
-    
-    private Long selectedUser;
-    private String filteredTeam;
-    private String dateFrom;
-    private String dateTo;
-    
-
-    public String getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(String dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public String getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(String dateTo) {
-        this.dateTo = dateTo;
-    }
 
     public List<ActivityComparisonResult> getActivityComparisonResultList() {
         return this.activityComparisonResultList;
@@ -167,20 +144,5 @@ public class CompareActivityVersionsForm extends ActionForm {
     public Set<Map.Entry<String, List<CompareOutput>>> getOutputCollectionGroupedAsSet() {
         return this.outputCollectionGrouped.entrySet();
     }
-    
-    public Long getSelectedUser() {
-        return selectedUser;
-    }
 
-    public void setSelectedUser(Long selectedUser) {
-        this.selectedUser = selectedUser;
-    }
-
-    public String getFilteredTeam() {
-        return filteredTeam;
-    }
-
-    public void setFilteredTeam(String filteredTeam) {
-        this.filteredTeam = filteredTeam;
-    }  
 }
