@@ -335,6 +335,12 @@ function compareAll(){
 								
 				  
 				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleFilterSettings();" id="displayFilterButton">
+					  <c:if test="${(not empty aimAuditLoggerManagerForm.selectedUser and aimAuditLoggerManagerForm.selectedUser !=-1 )
+					  or (not empty aimAuditLoggerManagerForm.selectedTeam and aimAuditLoggerManagerForm.selectedTeam != '-1' )
+					  or (not empty aimAuditLoggerManagerForm.selectedDateFrom ) or (not empty aimAuditLoggerManagerForm.selectedDateTo )}">
+						  <c:set var="hiddenStyle" value="pedro"/>
+					  </c:if>
+					  <c:out value ="${hiddenStyle}"/>
 				  <digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn> &gt;&gt;</span>
                                 &nbsp;<br>
 								<div style="display:none;background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
@@ -634,6 +640,8 @@ function compareAll(){
 						<c:set target="${urlParams1}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 						<c:set target="${urlParams1}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
 						<c:set target="${urlParams1}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+						<c:set target="${urlParams1}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+						<c:set target="${urlParams1}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						<c:if test="${aimAuditLoggerManagerForm.currentPage == pages && aimAuditLoggerManagerForm.pagesSize > 1}">
 							<font color="#FF0000"><%=pages%></font>
 							|	
@@ -642,7 +650,7 @@ function compareAll(){
 							<c:set var="translation">
 								<digi:trn key="aim:clickToViewNextPage">Click here to go to Next Page</digi:trn>
 							</c:set>
-							<digi:link href="/auditLoggerManager.do" name="urlParams1" title="${translation}" >
+							<digi:link href="/auditLoggerManager.do" name="urlParams1" title="${translation}" friendlyUrl="false">
 								<%=pages%>							
 							</digi:link>
 							|
@@ -655,8 +663,10 @@ function compareAll(){
 							<c:set target="${urlParamsNext}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsNext}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
 							<c:set target="${urlParamsNext}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsNext}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsNext}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 							<c:set var="translation"> <digi:trn key="aim:nextpage">Next Page</digi:trn></c:set>
-							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}">
+							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}" friendlyUrl="false">
 								<span style="font-size: 8pt; font-family: Tahoma;"><digi:trn key="aim:next">Next</digi:trn></span>
 							</digi:link>
 							<jsp:useBean id="urlParamsLast" type="java.util.Map" class="java.util.HashMap" />|
@@ -667,6 +677,8 @@ function compareAll(){
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
 							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsLast}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						</c:if>
 						
 						<c:if test="${aimAuditLoggerManagerForm.pagesSize < aimAuditLoggerManagerForm.pagesToShow}">
@@ -675,9 +687,11 @@ function compareAll(){
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
 							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
 							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsLast}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						</c:if>
 						<c:set var="translation"><digi:trn key="aim:lastpage">Last Page</digi:trn></c:set>
-						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}">
+						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}" friendlyUrl="false">
 							<span style="font-size: 8pt; font-family: Tahoma;">&gt;&gt;</span>
 						</digi:link>
 					</c:if>

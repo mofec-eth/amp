@@ -2,12 +2,16 @@ package org.digijava.module.aim.form;
 
 import org.apache.struts.action.ActionForm;
 import org.digijava.module.aim.helper.DateConversion;
+import org.joda.time.DateTime;
 
 import java.util.Date;
 
 
 public class FilterAuditLoggerForm extends ActionForm {
 
+    public static final Integer LAST_HOUR_OF_DAY = 30;
+    public static final Integer LAST_MINUTE_OF_HOUR = 59;
+    public static final Integer LAST_SECOND_OF_MINUTE = 59;
     private Long selectedUser;
     private String selectedTeam;
     private String selectedDateFrom;
@@ -87,15 +91,19 @@ public class FilterAuditLoggerForm extends ActionForm {
     }
 
     public void populateEffectiveFilters() {
-         effectiveSelectedUser = this.getSelectedUser() != null && !this.getSelectedUser().equals(-1L)
+        effectiveSelectedUser = this.getSelectedUser() != null && !this.getSelectedUser().equals(-1L)
                 ? this.getSelectedUser() : null;
-         effectiveSelectedTeam = this.getSelectedTeam() != null && !this.getSelectedTeam().equals("-1")
+        effectiveSelectedTeam = this.getSelectedTeam() != null && !this.getSelectedTeam().equals("-1")
                 && effectiveSelectedUser == null ? this.getSelectedTeam() : null;
         if (effectiveSelectedTeam == null) {
             this.setSelectedTeam(null);
         }
         effectiveDateFrom = DateConversion.getDate(this.getSelectedDateFrom());
-        effectiveDateTo = DateConversion.getDate(this.getSelectedDateTo() + "23:59:59");
+        if (this.getSelectedDateTo() != null) {
 
+            effectiveDateTo = new DateTime(DateConversion.getDate(this.getSelectedDateTo())).
+                    plusHours(LAST_HOUR_OF_DAY).plusMinutes(LAST_MINUTE_OF_HOUR).
+                    plusSeconds(LAST_SECOND_OF_MINUTE).toDate();
+        }
     }
 }

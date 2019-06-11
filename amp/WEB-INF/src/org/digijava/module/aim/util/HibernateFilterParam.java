@@ -56,34 +56,37 @@ public class HibernateFilterParam {
         this.operator = operator;
     }
 
-    public HibernateFilterParam(String fieldName, String filtername, Object value,
+    public HibernateFilterParam(String fieldName, String filterName, Object value,
                                 AbstractSingleColumnStandardBasicType hibernateType) {
-        this(fieldName, filtername, value, hibernateType, "=");
+        this(fieldName, filterName, value, hibernateType, "=");
     }
 
-    public HibernateFilterParam(String fieldName, String filtername, Object value,
+    public HibernateFilterParam(String fieldName, String filterName, Object value,
                                 AbstractSingleColumnStandardBasicType hibernateType, String operator) {
         this.fieldName = fieldName;
-        this.filterName = filtername;
+        this.filterName = filterName;
         this.value = value;
         this.hibernateType = hibernateType;
         this.operator = operator;
 
     }
 
+    private static String getFilterName(HibernateFilterParam filterParam) {
+        return filterParam.getFilterName() != null ? filterParam.getFilterName()
+                : filterParam.getFieldName();
+    }
+
     public static void getQueryStringFromFilterParam(List<HibernateFilterParam> paramList, StringBuffer hqlQuery) {
         paramList.forEach(filterParam -> {
-            String filterName = filterParam.getFilterName() != null ? filterParam.getFilterName()
-                    : filterParam.getFieldName();
+            String filterName = getFilterName(filterParam);
             hqlQuery.append(" and " + filterParam.getFieldName() + " " + filterParam.getOperator() + ":" + filterName);
         });
     }
 
     public static void setQueryParams(List<HibernateFilterParam> paramList, Query query) {
         paramList.forEach(filterParam -> {
-            String filterName = filterParam.getFilterName() != null ? filterParam.getFilterName()
-                    : filterParam.getFieldName();
-            query.setParameter(filterName, filterParam.getValue(), filterParam.hibernateType);
+            String filterName = getFilterName(filterParam);
+            query.setParameter(filterName, filterParam.getValue(), filterParam.getHibernateType());
         });
     }
 }

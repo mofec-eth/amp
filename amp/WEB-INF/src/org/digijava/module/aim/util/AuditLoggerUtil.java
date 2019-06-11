@@ -36,16 +36,21 @@ import org.hibernate.Transaction;
 import org.hibernate.type.DateType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TimestampType;
+
 /**
  * ActivityUtil is the persister class for all activity related
  * entities
  *
  * @author Priyajith
  */
-public class AuditLoggerUtil {
+public final class AuditLoggerUtil {
     
     private static String query;
     private static Logger logger = Logger.getLogger(AuditLoggerUtil.class);
+    private AuditLoggerUtil() {
+
+    }
     public static void logObject(HttpServletRequest request,
             LoggerIdentifiable o, String action,String additionalDetails) throws DgException { 
 
@@ -267,11 +272,11 @@ public class AuditLoggerUtil {
             }
             if (dateFrom != null) {
                 filters.add(new HibernateFilterParam("modifyDate", "modifyDateFrom",
-                        dateFrom, DateType.INSTANCE, ">="));
+                        dateFrom, TimestampType.INSTANCE, ">="));
             }
             if (dateTo != null) {
                 filters.add(new HibernateFilterParam("modifyDate", "modifyDateTo",
-                        dateTo, DateType.INSTANCE, "<="));
+                        dateTo, TimestampType.INSTANCE, "<="));
             }
 
             HibernateFilterParam.getQueryStringFromFilterParam(filters, qryStr);
