@@ -335,15 +335,22 @@ function compareAll(){
 								
 				  
 				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleFilterSettings();" id="displayFilterButton">
+					<c:set var="hiddenStyle" value="display:none;"/>
+					<c:set var="settingsTitle">
+						<digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn>
+					</c:set>
 					  <c:if test="${(not empty aimAuditLoggerManagerForm.selectedUser and aimAuditLoggerManagerForm.selectedUser !=-1 )
 					  or (not empty aimAuditLoggerManagerForm.selectedTeam and aimAuditLoggerManagerForm.selectedTeam != '-1' )
 					  or (not empty aimAuditLoggerManagerForm.selectedDateFrom ) or (not empty aimAuditLoggerManagerForm.selectedDateTo )}">
-						  <c:set var="hiddenStyle" value="pedro"/>
+						  <c:set var="hiddenStyle" value="display:inline-flex;"/>
+						  <c:set var="settingsTitle">
+							  <digi:trn key="aim:Showfilteroptions">Hide Filter options</digi:trn>
+						  </c:set>
 					  </c:if>
-					  <c:out value ="${hiddenStyle}"/>
-				  <digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn> &gt;&gt;</span>
+
+				  <c:out value="${settingsTitle}"/> </span>
                                 &nbsp;<br>
-								<div style="display:none;background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
+								<div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
 									<div class="divTable">
 										<div class="divTableBody">
 											<div class="divTableRow">
