@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.struts.action.ActionForm;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
 import org.digijava.module.aim.dbentity.AmpActivityVersion;
 import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 
-public class CompareActivityVersionsForm extends ActionForm {
+public class CompareActivityVersionsForm extends FilterAuditLoggerForm {
 
     private Long activityOneId;
 
@@ -145,4 +144,5 @@ public class CompareActivityVersionsForm extends ActionForm {
     public Set<Map.Entry<String, List<CompareOutput>>> getOutputCollectionGroupedAsSet() {
         return this.outputCollectionGrouped.entrySet();
     }
+
 }

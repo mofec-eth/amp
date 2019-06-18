@@ -2,10 +2,11 @@ package org.digijava.module.aim.form;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
-import org.apache.struts.action.ActionForm;
+import org.digijava.kernel.user.User;
 
-public class AuditLoggerManagerForm extends ActionForm implements Serializable{
+public class AuditLoggerManagerForm extends FilterAuditLoggerForm implements Serializable {
 
     
     private static final long serialVersionUID = -2614366966871314200L;
@@ -20,7 +21,10 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
     private String useraction;
     private String frecuency;
     private boolean withLogin;
-    
+    private List<Long> userId;
+    private List<String> teamList;
+    private Collection<User> userList;
+
     public String getUseraction() {
         return useraction;
     }
@@ -101,5 +105,29 @@ public class AuditLoggerManagerForm extends ActionForm implements Serializable{
 
     public void setWithLogin(boolean withLogin) {
         this.withLogin = withLogin;
+    } 
+    
+    public List<String> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(List<String> teamList) {
+        this.teamList = teamList;
+    }
+
+    public List<Long> getUserId() {
+        return userId;
+    }
+
+    public void setUserId(List<Long> userId) {
+        this.userId = userId;
+    }
+
+    public Collection<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(Collection<User> userList) {
+        this.userList = userList;
     }
 }
