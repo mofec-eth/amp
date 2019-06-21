@@ -7,10 +7,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -34,6 +36,7 @@ import org.digijava.module.aim.form.CompareActivityVersionsForm;
 import org.digijava.module.aim.helper.Constants;
 import org.digijava.module.aim.helper.TeamMember;
 import org.digijava.module.aim.util.versioning.ActivityComparisonContext;
+import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 import org.digijava.module.aim.util.ActivityUtil;
 import org.digijava.module.aim.util.ActivityVersionUtil;
 import org.digijava.module.aim.util.AuditLoggerUtil;
@@ -360,4 +363,26 @@ public class CompareActivityVersions extends DispatchAction {
         return mapping.findForward("forward");
     }
     
+    public ActionForward xlsExport(ActionMapping mapping,ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", "inline; filename=AuditLogger.xls");
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        Site site = RequestUtils.getSite(request);
+        Locale navigationLanguage = RequestUtils.getNavigationLanguage(request);
+        Long siteId = site.getId();
+        String locale = navigationLanguage.getCode();
+        AuditExcelExporter exporter = new AuditExcelExporter();
+        if(vForm.getActivityOneId() == 0) {
+            List<ActivityComparisonResult> outputCollection = vForm.getActivityComparisonResultList();
+            HSSFWorkbook wb = exporter.generateExcel(locale,siteId,outputCollection);
+            wb.write(response.getOutputStream()); 
+        }
+        else {
+            Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
+            HSSFWorkbook wb = exporter.generateExcel(locale,siteId,outputCollectionGrouped);
+            wb.write(response.getOutputStream());
+        }
+        return null;        
+    }
 }

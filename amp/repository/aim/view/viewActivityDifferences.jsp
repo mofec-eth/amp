@@ -131,6 +131,7 @@
 			</table>
 			<br/>
 			<input id="backButton" type="button" value="<digi:trn>Back to current version of the activity</digi:trn>" onclick="javascript:back()" />
+			<input id="exportButton" type="button" value="<digi:trn>Export to Excel</digi:trn>" onclick="javascript:xlsExport()" />
 		  	<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
 				<input id="mergeButton" type="button" value="<digi:trn>Enable Merge Process</digi:trn>" onclick="javascript:enableMerge();" />
 			</logic:equal>
@@ -147,6 +148,11 @@ function back() {
         document.getElementById("method").value = "cancel";
         document.getElementById('compareForm').submit();
     }
+}
+
+function xlsExport() {
+	   document.aimCompareActivityVersionsForm.method.value = "xlsExport";
+	    document.aimCompareActivityVersionsForm.submit();
 }
 
 function enableMerge() {
