@@ -4,6 +4,7 @@ import static org.apache.poi.ss.usermodel.CellStyle.BORDER_THIN;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
@@ -43,5 +44,11 @@ public class AuditXLSExportUtil {
         String newValues = newValue.replaceAll("&nbsp;", "\n");
         String newVal = newValues.replaceAll("<br>","");
         return newVal;
+    }
+    
+    public static void setColumnWidth(HSSFSheet sheet) {
+        sheet.setColumnWidth(0, 15*256);
+        sheet.setColumnWidth(1, 50*256);
+        sheet.setColumnWidth(2, 50*256);
     }
 }

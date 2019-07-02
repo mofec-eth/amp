@@ -21,7 +21,7 @@ public class AuditExcelExporter {
     HSSFSheet sheet = wb.createSheet(TranslatorWorker.translateText("Audit Logger"));
     HSSFCellStyle titleCS = AuditXLSExportUtil.createTitleStyle(wb);
     HSSFCellStyle  cs = AuditXLSExportUtil.createOrdinaryStyle(wb);
-
+    
     int rowIndex = 0;
     int cellIndex = 0;
     
@@ -65,6 +65,7 @@ public class AuditExcelExporter {
           checkMaxCellLimit(newVal, sheet, rowIndex, cellIndex, newcell);
           newcell.setCellStyle(cs);
     }
+    AuditXLSExportUtil.setColumnWidth(sheet);
     return wb;
 }
 
@@ -130,6 +131,7 @@ public class AuditExcelExporter {
               rowIndex++;
         }
         }
+        AuditXLSExportUtil.setColumnWidth(sheet);
         return wb;
     }
     
