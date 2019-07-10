@@ -9,15 +9,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
 public class AuditXLSExportUtil {
-    
-    public static HSSFCellStyle createTitleStyle(HSSFWorkbook wb){
+
+    public static HSSFCellStyle createTitleStyle(HSSFWorkbook wb) {
         HSSFCellStyle titleCS = wb.createCellStyle();
         wb.createCellStyle();
         titleCS.setWrapText(true);
-        titleCS.setFillForegroundColor(HSSFColor.BROWN.index);
         HSSFFont fontHeader = wb.createFont();
         fontHeader.setFontName(HSSFFont.FONT_ARIAL);
-        fontHeader.setFontHeightInPoints((short) 10);
         fontHeader.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         titleCS.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         titleCS.setFont(fontHeader);
@@ -27,9 +25,9 @@ public class AuditXLSExportUtil {
         titleCS.setBorderTop(BORDER_THIN);
         return titleCS;
     }
-    
-    public static HSSFCellStyle  createOrdinaryStyle(HSSFWorkbook wb){
-        HSSFCellStyle  cs = wb.createCellStyle();
+
+    public static HSSFCellStyle createOrdinaryStyle(HSSFWorkbook wb) {
+        HSSFCellStyle cs = wb.createCellStyle();
         cs.setWrapText(true);
         cs.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
         cs.setBorderBottom(BORDER_THIN);
@@ -38,17 +36,17 @@ public class AuditXLSExportUtil {
         cs.setBorderTop(BORDER_THIN);
         return cs;
     }
-    
+
     public static String htmlToXLSFormat(String stringToFormat) {
-        String newValue = stringToFormat.toString().replaceAll("\\<.*?>","");
+        String newValue = stringToFormat.toString().replaceAll("\\<.*?>", "");
         String newValues = newValue.replaceAll("&nbsp;", "\n");
-        String newVal = newValues.replaceAll("<br>","");
+        String newVal = newValues.replaceAll("<br>", "");
         return newVal;
     }
-    
+
     public static void setColumnWidth(HSSFSheet sheet) {
-        sheet.setColumnWidth(0, 15*256);
-        sheet.setColumnWidth(1, 50*256);
-        sheet.setColumnWidth(2, 50*256);
+        sheet.setColumnWidth(0, 15 * 256);
+        sheet.setColumnWidth(1, 50 * 256);
+        sheet.setColumnWidth(2, 50 * 256);
     }
 }
