@@ -6,9 +6,14 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 
-public class AuditXLSExportUtil {
+public final class AuditXLSExportUtil {
+    
+    private static final Integer first_COLUMN_WIDTH = 3840;
+    private static final Integer COLUMN_WIDTH = 12800;
+    private AuditXLSExportUtil() {
+        
+    }
 
     public static HSSFCellStyle createTitleStyle(HSSFWorkbook wb) {
         HSSFCellStyle titleCS = wb.createCellStyle();
@@ -19,7 +24,6 @@ public class AuditXLSExportUtil {
         fontHeader.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         titleCS.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         titleCS.setFont(fontHeader);
-        titleCS.setBorderBottom(BORDER_THIN);
         titleCS.setBorderLeft(BORDER_THIN);
         titleCS.setBorderRight(BORDER_THIN);
         titleCS.setBorderTop(BORDER_THIN);
@@ -45,8 +49,8 @@ public class AuditXLSExportUtil {
     }
 
     public static void setColumnWidth(HSSFSheet sheet) {
-        sheet.setColumnWidth(0, 15 * 256);
-        sheet.setColumnWidth(1, 50 * 256);
-        sheet.setColumnWidth(2, 50 * 256);
+        sheet.setColumnWidth(0, first_COLUMN_WIDTH);
+        sheet.setColumnWidth(1, COLUMN_WIDTH);
+        sheet.setColumnWidth(2, COLUMN_WIDTH);
     }
 }

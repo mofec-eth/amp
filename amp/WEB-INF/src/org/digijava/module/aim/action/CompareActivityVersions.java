@@ -335,10 +335,12 @@ public class CompareActivityVersions extends DispatchAction {
         TeamMember currentMember = (TeamMember) request.getSession().getAttribute("currentMember");
         AmpTeamMember ampCurrentMember = TeamMemberUtil.getAmpTeamMember(currentMember.getMemberId());
         
-        if (ampCurrentMember.getAmpMemberRole().getTeamHead())
+        if (ampCurrentMember.getAmpMemberRole().getTeamHead()) {
             iscurrentworkspacemanager = true;
-        if (ampCurrentMember.getAmpTeam().getAccessType().equalsIgnoreCase(Constants.ACCESS_TYPE_MNGMT))
+        }
+        if (ampCurrentMember.getAmpTeam().getAccessType().equalsIgnoreCase(Constants.ACCESS_TYPE_MNGMT)) {
             ispartofamanagetmentworkspace = true;
+        }
         
         // If the current user is part of the management workspace or is not the
         // workspace manager of a workspace that's not management then hide.
@@ -375,14 +377,13 @@ public class CompareActivityVersions extends DispatchAction {
         Locale navigationLanguage = RequestUtils.getNavigationLanguage(request);
         Long siteId = site.getId();
         String locale = navigationLanguage.getCode();
-        AuditExcelExporter exporter = new AuditExcelExporter();
         if (vForm.getActivityOneId() == 0) {
             List<ActivityComparisonResult> outputCollection = vForm.getActivityComparisonResultList();
-            HSSFWorkbook wb = exporter.generateExcel(locale, siteId, outputCollection);
+            HSSFWorkbook wb = AuditExcelExporter.generateExcel(locale, siteId, outputCollection);
             wb.write(response.getOutputStream());
         } else {
             Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
-            HSSFWorkbook wb = exporter.generateExcel(locale, siteId, outputCollectionGrouped);
+            HSSFWorkbook wb = AuditExcelExporter.generateExcel(locale, siteId, outputCollectionGrouped);
             wb.write(response.getOutputStream());
         }
         return null;
