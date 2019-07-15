@@ -65,6 +65,10 @@
 					<c:if test="${aimCompareActivityVersionsForm.method != 'compareAll'}">
 						<a><div><digi:trn>Compare Activities</digi:trn></div></a>
 					</c:if>
+					<a target="_blank" onclick="pdfExport(); return false;" title="Export to Excel"
+					   style="cursor: pointer;">
+						<img src="/TEMPLATE/ampTemplate/images/icons/pdf.gif" border="0" hspace="2" vspace="2" alt="Export to PDF">
+					</a>
 				</li>
 			</ul>
 		</div>
@@ -131,7 +135,8 @@
 			</table>
 			<br/>
 			<input id="backButton" type="button" value="<digi:trn>Back to current version of the activity</digi:trn>" onclick="javascript:back()" />
-		  	<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
+			<input id="pdfExportButton" type="button" value="<digi:trn>Export to PDF</digi:trn>" onclick="javascript:pdfExport()" />
+			<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
 				<input id="mergeButton" type="button" value="<digi:trn>Enable Merge Process</digi:trn>" onclick="javascript:enableMerge();" />
 			</logic:equal>
 			<input id="saveButton" type="button" value="<digi:trn>Save New Activity</digi:trn>" onclick="javascript:save();" />
@@ -141,12 +146,19 @@
 
 <script language="Javascript">
 function back() {
-    if (document.aimCompareActivityVersionsForm.method.value === "viewDifferences"){
-        window.history.back();
-    }else {
-        document.getElementById("method").value = "cancel";
-        document.getElementById('compareForm').submit();
-    }
+	if (document.aimCompareActivityVersionsForm.method.value === "viewDifferences") {
+		window.history.back();
+	} else if (document.aimCompareActivityVersionsForm.method.value === "pdfExport") {
+		window.history.back();
+	} else {
+		document.getElementById("method").value = "cancel";
+		document.getElementById('compareForm').submit();
+	}
+}
+
+function pdfExport() {
+	document.aimCompareActivityVersionsForm.method.value = "pdfExport";
+	document.aimCompareActivityVersionsForm.submit();
 }
 
 function enableMerge() {
@@ -240,9 +252,14 @@ if(document.getElementById('method').value == "enableMerge") {
     document.getElementById('saveButton').disabled = "disabled";
     document.getElementById('saveButton').style.display = 'none';
     document.getElementById('backButton').style.visibility = "hidden";
-}else {
-    document.getElementById('saveButton').disabled = "disabled";
-    document.getElementById('saveButton').style.display = 'none';
+}else if (document.aimCompareActivityVersionsForm.method.value === "pdfExport"){
+	document.getElementById('saveButton').disabled = "disabled";
+	document.getElementById('saveButton').style.display = 'none';
+	$('#backButton').prop('value', '<digi:trn>Back to Audit Logger</digi:trn>');
+}
+else {
+	document.getElementById('saveButton').disabled = "disabled";
+	document.getElementById('saveButton').style.display = 'none';
 }
 </script>
 		
