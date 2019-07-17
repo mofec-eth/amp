@@ -1,137 +1,160 @@
 
 package org.digijava.module.aim.action;
-import com.lowagie.text.pdf.BaseFont;
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.digijava.kernel.translator.TranslatorWorker;
-import org.digijava.kernel.util.SiteUtils;
-import org.digijava.module.aim.action.ExportActivityToPDF.PdfPTableEvents;
-import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
-import org.digijava.module.aim.dbentity.AmpActivityVersion;
-import org.digijava.module.aim.form.EditActivityForm;
-import org.digijava.module.aim.util.FeaturesUtil;
-import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
-import org.digijava.module.categorymanager.dbentity.AmpCategoryValue;
-
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPTableEvent;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
+import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
+import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 
-import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
+
+//import org.digijava.kernel.util.SiteUtils;
 public class AuditPDFexporter {
-private static final String FILE_NAME = null;
 
+    private static AuditPDFexporter auditPDFexporter;
 
-public static void PDFexport(Map<String, List<CompareOutput>> outputCollectionGrouped) {
+    private static final Font titleFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD, new BaseColor(0, 255, 255));
+    private static final Font plainFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, new BaseColor(0, 255, 255));
 
-    public static final int COLUMNS = 3;
-    
-    public static void main(String[] args) {
-        writeUsingIText();
+    private static final BaseColor BACKGROUND_COLOR = new BaseColor(244, 244, 242);
+
+    public static AuditPDFexporter getInstance() {
+        if (auditPDFexporter == null) {
+            auditPDFexporter = new AuditPDFexporter();
+        }
+        return auditPDFexporter;
     }
 
-    private static void writeUsingIText() {
+    private AuditPDFexporter() {
 
-        com.itextpdf.text.Document document = new Document();
-      
-       
+    }
+
+    public ByteArrayOutputStream buildPDFexport(List<ActivityComparisonResult> activityComparisonResult) {
+        return generatePDFExport(activityComparisonResult);
+    }
+
+    public ByteArrayOutputStream buildPDFexport(Map<String, List<CompareOutput>> outputCollectionGrouped) {
+        //TODO you need to adjust writeUsingIText
+        ByteArrayOutputStream baos = null;
+        return baos;
+    }
+
+
+    private ByteArrayOutputStream generatePDFExport(List<ActivityComparisonResult> activityComparisonResult) {
         try {
-
-            PdfWriter.getInstance(document, new FileOutputStream(new File(FILE_NAME)));
-
-            //open
+            Document document = new Document();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfWriter.getInstance(
+                    document, baos);
             document.open();
-            PdfPTable mainLayout = buildPdfTable(3);
-           
+            PdfPTable mainLayout = buildPdfTable(2);
+            mainLayout.setWidths(new float[]{1f, 2f});
             mainLayout.setWidthPercentage(100);
             PdfPTableEvents event = new PdfPTableEvents();
             mainLayout.setTableEvent(event);
             mainLayout.getDefaultCell().setBorder(0);
-            Paragraph p = new Paragraph();
-            //p.setAlignment(Element.ALIGN_CENTER);
+            Font headerFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, new BaseColor(0, 0, 0));
 
-            document.add(p);
-            Paragraph p1 = new Paragraph();
-            p1.add(""); //no alignment
+            PdfPCell titleCell = new PdfPCell();
+            //TODO this needs to be translatable
+            Paragraph p1 = new Paragraph("Activity difference", headerFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            Paragraph p2 = new Paragraph();
-            p2.add(""); //no alignment
+            titleCell.addElement(p1);
+            titleCell.setColspan(2);
+            titleCell.setBackgroundColor(new BaseColor(0, 102, 153));
+            mainLayout.addCell(titleCell);
 
-            document.add(p2);
-            Paragraph p3 = new Paragraph();
-            p3.add(""); //no alignment
-
-            document.add(p3);
-            Font f = new Font();
-            f.setStyle(Font.BOLD);
-            f.setSize(8);
-                String columnName="";
-                String columnVal="";
-
-                               //heading cell
-                PdfPCell titleCell=new PdfPCell();
-
-                com.lowagie.text.Font headerFont = new com.lowagie.text.Font( 11, Font.BOLD, 0, new Color(255, 255, 255));
-                p1=new Paragraph("Value");
-                p2=new Paragraph("First Version");
-                p3=new Paragraph("Second Version");
-                p1.setAlignment(Element.ALIGN_CENTER);
-                titleCell.addElement((com.lowagie.text.Element) p1);
-                titleCell.addElement((com.lowagie.text.Element) p2);
-                titleCell.addElement((com.lowagie.text.Element) p3);
-                titleCell.setColspan(2);
-                titleCell.setBackgroundColor(new Color(0,102,153));
-                mainLayout.addCell(titleCell);
-                Object outputCollectionGrouped;
-				outputCollectionGrouped.actvity();
-                File actvity;
-				createGeneralInfoRow(mainLayout,columnName,actvity.getName());                 
-            //close
+            for (ActivityComparisonResult cr : activityComparisonResult) {
+                createGeneralInfoRow(mainLayout, "Activity ", cr.getName());
+                //TODO here we are iterating the list, we need to iterate cr.getCompareOutput()
+                //TODO to actually build the each comparision
+                //TODO also we need to create the headers of the pdf
+                //TODO also you might need to add some methos to split the cell to the right into two so you can show previous
+                // and current value
+            }
+            document.add(mainLayout);
             document.close();
+            return baos;
 
-            System.out.println("Done");
-           
-         
-        } catch (FileNotFoundException | DocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+
+        } catch (DocumentException e) {
             e.printStackTrace();
         }
+
+        return null;
+    }
+
+    private void createGeneralInfoRow(PdfPTable mainLayout, String columnName, String value) {
+        createGeneralInfoRow(mainLayout, columnName, "", value);
 
     }
-    private static void createGeneralInfoRow(PdfPTable mainLayout, String columnName, String name) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	private static PdfPTable buildPdfTable(int columns) {
-        PdfPTable table = new PdfPTable(columns);
-        if (SiteUtils.isEffectiveLangRTL()) {
-            table.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+    private void createGeneralInfoRow(PdfPTable mainLayout, String columnName, String label, String value) {
+        if (value == null || value.isEmpty()) {
+            return;
         }
+        PdfPCell cell1 = new PdfPCell();
+        Paragraph p1 = new Paragraph(columnName, titleFont);
+        p1.setAlignment(Element.ALIGN_RIGHT);
+        cell1.addElement(p1);
+        cell1.setBackgroundColor(BACKGROUND_COLOR);
+        cell1.setBorder(0);
+        mainLayout.addCell(cell1);
+
+        PdfPCell cell2 = new PdfPCell(createGeneralInfoTable(label, value));
+        cell2.setBorder(0);
+        mainLayout.addCell(cell2);
+    }
+
+    private PdfPTable createGeneralInfoTable(String label, String value) {
+        PdfPTable valueTable = new PdfPTable(2);
+
+        if (value != null && !value.isEmpty()) {
+            PdfPCell labelCell = new PdfPCell(new Paragraph(label, plainFont));
+            labelCell.setBorder(0);
+            PdfPCell valueCell = new PdfPCell(new Paragraph(value, plainFont));
+            valueCell.setBorder(0);
+            valueTable.addCell(labelCell);
+            valueTable.addCell(valueCell);
+        }
+
+        return valueTable;
+    }
+
+
+    private static PdfPTable buildPdfTable(int columns) {
+        PdfPTable table = new PdfPTable(columns);
         return table;
     }
 
+    static class PdfPTableEvents implements PdfPTableEvent {
+        /**
+         * @see com.lowagie.text.pdf.PdfPTableEvent#tableLayout(com.lowagie.text.pdf.PdfPTable,
+         * float[][], float[], int, int, com.lowagie.text.pdf.PdfContentByte[])
+         */
+        public void tableLayout(PdfPTable table, float[][] width, float[] height, int headerRows, int rowStart, PdfContentByte[] canvas) {
+            // widths of the different cells of the first row
+            //TODO This seems to be duplicate code but they are different libraries.
+            float widths[] = width[0];
+            PdfContentByte cb = canvas[PdfPTable.TEXTCANVAS];
+            cb.saveState();
+            // border for the complete table
+            cb.setLineWidth(1);
+            cb.setRGBColorStroke(0, 0, 0);
+            cb.rectangle(widths[0], height[height.length - 1], widths[widths.length - 1] - widths[0], height[0] - height[height.length - 1]);
+            cb.stroke();
+            cb.restoreState();
+        }
+    }
 }
