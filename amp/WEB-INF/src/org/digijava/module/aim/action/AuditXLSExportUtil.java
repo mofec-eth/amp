@@ -27,6 +27,7 @@ public final class AuditXLSExportUtil {
         titleCS.setBorderLeft(BORDER_THIN);
         titleCS.setBorderRight(BORDER_THIN);
         titleCS.setBorderTop(BORDER_THIN);
+        titleCS.setBorderBottom(BORDER_THIN);
         return titleCS;
     }
 

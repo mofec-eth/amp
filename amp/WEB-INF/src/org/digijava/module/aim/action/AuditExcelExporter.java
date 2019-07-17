@@ -23,88 +23,34 @@ public final class AuditExcelExporter {
 
     public static HSSFWorkbook generateExcel(String locale, Long siteId,
             Map<String, List<CompareOutput>> outputCollectionGrouped) {
-    HSSFWorkbook wb = new HSSFWorkbook();
-    HSSFSheet sheet = wb.createSheet(TranslatorWorker.translateText("Audit Logger"));
-        HSSFRow titleRow = createHeader(wb, sheet, locale, siteId);
 
-    int rowIndex = 1;
-    HSSFCellStyle  cs = AuditXLSExportUtil.createOrdinaryStyle(wb);        
-        
-    Set<String> keyset = outputCollectionGrouped.keySet();
-        for (String key : keyset) {   
-    int cellIndex = 0;
-    HSSFRow valueRow = sheet.createRow(rowIndex);
-    HSSFCell colcell = valueRow.createCell(cellIndex++);
-    colcell.setCellValue(key);
-    colcell.setCellStyle(cs);
-  
-    List<CompareOutput> nameList = outputCollectionGrouped.get(key);
-    CompareOutput comp = nameList.get(0);
-    HSSFCell groupcell = valueRow.createCell(cellIndex++);
-    String[] value = comp.getStringOutput();
-    String oldValue = value[1];
-    String old = AuditXLSExportUtil.htmlToXLSFormat(oldValue);
-            rowIndex = checkMaxCellLimit(old, sheet, rowIndex, cellIndex, groupcell);
-    groupcell.setCellStyle(cs);
-          
-    HSSFCell newcell = valueRow.createCell(cellIndex);
-    String newValue = value[0];
-    String newVal = AuditXLSExportUtil.htmlToXLSFormat(newValue);
-            rowIndex = checkMaxCellLimit(newVal, sheet, rowIndex, cellIndex, newcell);
-    rowIndex++;
-    newcell.setCellStyle(cs);
-    }
+    int rowIndex = 1; 
+    HSSFSheet sheet = createWorkbook(locale, siteId); 
+    getCellValues(outputCollectionGrouped, sheet, rowIndex); 
     AuditXLSExportUtil.setColumnWidth(sheet);
-    return wb;
-}
+    return sheet.getWorkbook();
+    }
 
     public static HSSFWorkbook generateExcel(String locale, Long siteId,
             List<ActivityComparisonResult> outputCollection) {
-    HSSFWorkbook wb = new HSSFWorkbook();
-    HSSFSheet sheet = wb.createSheet(TranslatorWorker.translateText("Audit Logger"));
-        HSSFRow titleRow = createHeader(wb, sheet, locale, siteId);
-    int rowIndex = 1;
-    HSSFCellStyle  cs = AuditXLSExportUtil.createOrdinaryStyle(wb);     
-   
-        for (ActivityComparisonResult result : outputCollection) {
+
+    int rowIndex = 1;   
+    HSSFSheet sheet = createWorkbook(locale, siteId);     
+    for (ActivityComparisonResult result : outputCollection) {
     int cellIndex = 0;
-            String name = result.getName();
+    String name = result.getName();
     HSSFRow nameRow = sheet.createRow(rowIndex);
-            sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 2));
+    sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 2));
     rowIndex++;
     HSSFCell nameCell = nameRow.createCell(cellIndex++);
     nameCell.setCellValue(name);
-    nameCell.setCellStyle(AuditXLSExportUtil.createTitleStyle(wb));
-        
-    Map<String, List<CompareOutput>> outputCollectionGrouped = result.getCompareOutput();        
-    Set<String> keyset = outputCollectionGrouped.keySet();
-            for (String key : keyset) {
-                cellIndex = 0;
-                HSSFRow valueRow = sheet.createRow(rowIndex);
-                HSSFCell colcell = valueRow.createCell(cellIndex++);
-                colcell.setCellValue(key);
-                colcell.setCellStyle(cs);
-
-                List<CompareOutput> nameList = outputCollectionGrouped.get(key);
-                CompareOutput comp = nameList.get(0);
-                HSSFCell groupcell = valueRow.createCell(cellIndex++);
-                String[] value = comp.getStringOutput();
-                String oldValue = value[1];
-                String old = AuditXLSExportUtil.htmlToXLSFormat(oldValue);
-                rowIndex = checkMaxCellLimit(old, sheet, rowIndex, cellIndex, groupcell);
-                groupcell.setCellStyle(cs);
-
-                HSSFCell newcell = valueRow.createCell(cellIndex);
-                String newValue = value[0];
-                String newVal = AuditXLSExportUtil.htmlToXLSFormat(newValue);
-                rowIndex = checkMaxCellLimit(newVal, sheet, rowIndex, cellIndex, newcell);
-                newcell.setCellStyle(cs);
-                rowIndex++;
-            }
-        }
-        AuditXLSExportUtil.setColumnWidth(sheet);
-        return wb;
-    }
+    nameCell.setCellStyle(AuditXLSExportUtil.createTitleStyle(sheet.getWorkbook()));        
+    Map<String, List<CompareOutput>> outputCollectionGrouped = result.getCompareOutput();    
+    rowIndex = getCellValues(outputCollectionGrouped, sheet, rowIndex);    
+      }
+    AuditXLSExportUtil.setColumnWidth(sheet);
+    return sheet.getWorkbook();
+     }
 
     public static HSSFRow createHeader(HSSFWorkbook wb, HSSFSheet sheet, String locale, Long siteId) {
         HSSFCellStyle titleCS = AuditXLSExportUtil.createTitleStyle(wb);
@@ -161,4 +107,44 @@ public final class AuditExcelExporter {
         }
         return rowIndex;
     }
+    
+    public static HSSFSheet createWorkbook(String locale, Long siteId) {
+        HSSFWorkbook wb = new HSSFWorkbook();
+        HSSFSheet sheet = wb.createSheet(TranslatorWorker.translateText("Audit Logger"));
+        createHeader(wb, sheet, locale, siteId);
+         return sheet;
+    }
+    
+    public static int getCellValues(Map<String, List<CompareOutput>> outputCollectionGrouped, HSSFSheet sheet,
+            int rowIndex) {
+      
+      HSSFWorkbook wb = sheet.getWorkbook();  
+      HSSFCellStyle  cs = AuditXLSExportUtil.createOrdinaryStyle(wb);  
+      Set<String> keyset = outputCollectionGrouped.keySet();
+      for (String key : keyset) {   
+      int cellIndex = 0;
+      HSSFRow valueRow = sheet.createRow(rowIndex);
+      HSSFCell colcell = valueRow.createCell(cellIndex++);
+      colcell.setCellValue(key);
+      colcell.setCellStyle(cs);
+    
+      List<CompareOutput> nameList = outputCollectionGrouped.get(key);
+      CompareOutput comp = nameList.get(0);
+      HSSFCell groupcell = valueRow.createCell(cellIndex++);
+      String[] value = comp.getStringOutput();
+      String oldValue = value[1];
+      String old = AuditXLSExportUtil.htmlToXLSFormat(oldValue);
+      rowIndex = checkMaxCellLimit(old, sheet, rowIndex, cellIndex, groupcell);
+      groupcell.setCellStyle(cs);
+            
+      HSSFCell newcell = valueRow.createCell(cellIndex);
+      String newValue = value[0];
+      String newVal = AuditXLSExportUtil.htmlToXLSFormat(newValue);
+      rowIndex = checkMaxCellLimit(newVal, sheet, rowIndex, cellIndex, newcell);
+      rowIndex++;
+      newcell.setCellStyle(cs);
+      }
+      return rowIndex;
+}
+    
 }
