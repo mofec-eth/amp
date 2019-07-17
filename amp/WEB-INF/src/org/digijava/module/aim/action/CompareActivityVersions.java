@@ -361,8 +361,19 @@ public class CompareActivityVersions extends DispatchAction {
     }
     public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
-        System.out.println("EXPORT TO PDF");
+       // System.out.println("EXPORT TO PDF");
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm)form;
+        Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
+        if(vForm.getActivityOneId()==0) {
+        
+        	  AuditPDFexporter.PDFexport(outputCollectionGrouped);
+        }else {
+        	  AuditPDFexporter.PDFexport(outputCollectionGrouped);
+        }
+    
+        response.setContentType("application/pdf; charset=UTF-8");
+        response.setHeader("content-disposition", "attachment;filename=activity.pdf");
+        
         //Take into account that this method should both handle individual export and full export
         //See pr from MISTRE to see how to handle content type and content disposition.
         return mapping.findForward("forward");
