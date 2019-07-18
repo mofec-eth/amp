@@ -373,13 +373,14 @@ public class CompareActivityVersions extends DispatchAction {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-disposition", "inline; filename=AuditLogger.xls");
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        AuditExcelExporter auditExcelExporter = new AuditExcelExporter();
         if (vForm.getActivityOneId() == 0) {
             List<ActivityComparisonResult> outputCollection = vForm.getActivityComparisonResultList();
-            HSSFWorkbook wb = AuditExcelExporter.generateExcel(outputCollection);
+            HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollection);
             wb.write(response.getOutputStream());
         } else {
             Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
-            HSSFWorkbook wb = AuditExcelExporter.generateExcel(outputCollectionGrouped);
+            HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollectionGrouped);
             wb.write(response.getOutputStream());
         }
         return null;
