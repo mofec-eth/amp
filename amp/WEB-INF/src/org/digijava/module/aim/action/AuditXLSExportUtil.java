@@ -11,6 +11,7 @@ public final class AuditXLSExportUtil {
     
     private static final Integer first_COLUMN_WIDTH = 3840;
     private static final Integer COLUMN_WIDTH = 12800;
+    private static HSSFCellStyle cs;
     private AuditXLSExportUtil() {
         
     }
@@ -32,7 +33,7 @@ public final class AuditXLSExportUtil {
     }
 
     public static HSSFCellStyle createOrdinaryStyle(HSSFWorkbook wb) {
-        HSSFCellStyle cs = wb.createCellStyle();
+        cs = wb.createCellStyle();
         cs.setWrapText(true);
         cs.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
         cs.setBorderBottom(BORDER_THIN);

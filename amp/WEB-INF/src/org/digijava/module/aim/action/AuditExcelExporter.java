@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.digijava.kernel.request.TLSUtils;
 import org.digijava.kernel.translator.TranslatorWorker;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
 import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
@@ -17,30 +18,32 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 
 public final class AuditExcelExporter {
     private static final Integer CELL_LIMIT = 32767;
+    private static int rowIndex = 1;
+    private static int cellIndex = 0;
+    private static final Integer FIRST_COLUMN = 0;
+    private static final Integer LAST_COLUMN = 2;
+    private static final Integer VALUE_NAME = 0;
+        
     private AuditExcelExporter() {
         
     }
 
-    public static HSSFWorkbook generateExcel(String locale, Long siteId,
-            Map<String, List<CompareOutput>> outputCollectionGrouped) {
+    public static HSSFWorkbook generateExcel(Map<String, List<CompareOutput>> outputCollectionGrouped) {
 
-    int rowIndex = 1; 
-    HSSFSheet sheet = createWorkbook(locale, siteId); 
+    HSSFSheet sheet = createWorkbook(); 
     getCellValues(outputCollectionGrouped, sheet, rowIndex); 
     AuditXLSExportUtil.setColumnWidth(sheet);
     return sheet.getWorkbook();
     }
 
-    public static HSSFWorkbook generateExcel(String locale, Long siteId,
-            List<ActivityComparisonResult> outputCollection) {
+    public static HSSFWorkbook generateExcel(List<ActivityComparisonResult> outputCollection) {
 
-    int rowIndex = 1;   
-    HSSFSheet sheet = createWorkbook(locale, siteId);     
+    HSSFSheet sheet = createWorkbook();     
     for (ActivityComparisonResult result : outputCollection) {
-    int cellIndex = 0;
+    cellIndex = 0;
     String name = result.getName();
     HSSFRow nameRow = sheet.createRow(rowIndex);
-    sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 2));
+    sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, FIRST_COLUMN, LAST_COLUMN));
     rowIndex++;
     HSSFCell nameCell = nameRow.createCell(cellIndex++);
     nameCell.setCellValue(name);
@@ -52,28 +55,30 @@ public final class AuditExcelExporter {
     return sheet.getWorkbook();
      }
 
-    public static HSSFRow createHeader(HSSFWorkbook wb, HSSFSheet sheet, String locale, Long siteId) {
+    public static HSSFRow createHeader(HSSFWorkbook wb, HSSFSheet sheet) {
         HSSFCellStyle titleCS = AuditXLSExportUtil.createTitleStyle(wb);
 
-        int rowIndex = 0;
-        int cellIndex = 0;
+        rowIndex = 0;
+        cellIndex = 0;
 
         HSSFRow titleRow = sheet.createRow(rowIndex++);
 
         HSSFCell titleCell = titleRow.createCell(cellIndex++);
-        HSSFRichTextString title = new HSSFRichTextString(TranslatorWorker.translateText("Value Name", locale, siteId));
+        HSSFRichTextString title = new HSSFRichTextString(
+                TranslatorWorker.translateText("Value Name", TLSUtils.getEffectiveLangCode(), TLSUtils.getSiteId()));
         titleCell.setCellValue(title);
         titleCell.setCellStyle(titleCS);
 
         HSSFCell cellName = titleRow.createCell(cellIndex++);
         HSSFRichTextString previous = new HSSFRichTextString(
-                TranslatorWorker.translateText("Previous Version", locale, siteId));
+                TranslatorWorker.translateText("Previous Version", TLSUtils.getEffectiveLangCode(),
+                        TLSUtils.getSiteId()));
         cellName.setCellValue(previous);
         cellName.setCellStyle(titleCS);
 
         HSSFCell cellNew = titleRow.createCell(cellIndex++);
         HSSFRichTextString newVersion = new HSSFRichTextString(
-                TranslatorWorker.translateText("New Version", locale, siteId));
+                TranslatorWorker.translateText("New Version", TLSUtils.getEffectiveLangCode(), TLSUtils.getSiteId()));
         cellNew.setCellValue(newVersion);
         cellNew.setCellStyle(titleCS);
 
@@ -101,17 +106,17 @@ public final class AuditExcelExporter {
                 valuescell.setCellStyle(AuditXLSExportUtil.createOrdinaryStyle(wb));
                 remain = length - (i + CELL_LIMIT);
             }
-            sheet.addMergedRegion(new CellRangeAddress(mergeIndex, rowIndex, 0, 0));
+            sheet.addMergedRegion(new CellRangeAddress(mergeIndex, rowIndex, FIRST_COLUMN, FIRST_COLUMN));
         } else {
             cell.setCellValue(cellValue);
         }
         return rowIndex;
     }
     
-    public static HSSFSheet createWorkbook(String locale, Long siteId) {
+    public static HSSFSheet createWorkbook() {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet(TranslatorWorker.translateText("Audit Logger"));
-        createHeader(wb, sheet, locale, siteId);
+        createHeader(wb, sheet);
          return sheet;
     }
     
@@ -122,14 +127,14 @@ public final class AuditExcelExporter {
       HSSFCellStyle  cs = AuditXLSExportUtil.createOrdinaryStyle(wb);  
       Set<String> keyset = outputCollectionGrouped.keySet();
       for (String key : keyset) {   
-      int cellIndex = 0;
+      cellIndex = 0;
       HSSFRow valueRow = sheet.createRow(rowIndex);
       HSSFCell colcell = valueRow.createCell(cellIndex++);
       colcell.setCellValue(key);
       colcell.setCellStyle(cs);
     
       List<CompareOutput> nameList = outputCollectionGrouped.get(key);
-      CompareOutput comp = nameList.get(0);
+      CompareOutput comp = nameList.get(VALUE_NAME);
       HSSFCell groupcell = valueRow.createCell(cellIndex++);
       String[] value = comp.getStringOutput();
       String oldValue = value[1];
