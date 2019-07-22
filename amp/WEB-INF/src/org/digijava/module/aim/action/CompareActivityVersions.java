@@ -9,10 +9,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -36,6 +38,7 @@ import org.digijava.module.aim.form.CompareActivityVersionsForm;
 import org.digijava.module.aim.helper.Constants;
 import org.digijava.module.aim.helper.TeamMember;
 import org.digijava.module.aim.util.versioning.ActivityComparisonContext;
+import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 import org.digijava.module.aim.util.ActivityUtil;
 import org.digijava.module.aim.util.ActivityVersionUtil;
 import org.digijava.module.aim.util.AuditLoggerUtil;
@@ -371,9 +374,9 @@ public class CompareActivityVersions extends DispatchAction {
             // TODO outputCollectionGrouped is NULL check why and see if we shouldn't calculate it before
             // TODO invoking exporter
             // TODO you need to catch errors and report the user why the pdf was not generated
-            baos = AuditPDFexporter.getInstance().buildPDFexport(outputCollectionGrouped);
+            baos = AuditPDFexporter.getInstance().buildPDFexport1(vForm.getActivityComparisonResultList());
         } else {
-            baos = AuditPDFexporter.getInstance().buildPDFexport(vForm.getActivityComparisonResultList());
+            baos = AuditPDFexporter.getInstance().buildPDFexport(outputCollectionGrouped);
         }
 
         response.setContentType("application/pdf; charset=UTF-8");

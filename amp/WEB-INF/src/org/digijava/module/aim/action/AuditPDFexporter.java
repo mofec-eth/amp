@@ -12,12 +12,21 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPTableEvent;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
-import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
-
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
+import org.digijava.kernel.request.TLSUtils;
+import org.digijava.kernel.translator.TranslatorWorker;
+import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
+import org.digijava.module.aim.form.CompareActivityVersionsForm;
+import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 
 //import org.digijava.kernel.util.SiteUtils;
 public class AuditPDFexporter {
@@ -28,6 +37,8 @@ public class AuditPDFexporter {
     private static final Font plainFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, new BaseColor(0, 255, 255));
 
     private static final BaseColor BACKGROUND_COLOR = new BaseColor(244, 244, 242);
+
+	private static final int VALUE_NAME = 0;
 
     public static AuditPDFexporter getInstance() {
         if (auditPDFexporter == null) {
@@ -40,67 +51,77 @@ public class AuditPDFexporter {
 
     }
 
-    public ByteArrayOutputStream buildPDFexport(List<ActivityComparisonResult> activityComparisonResult) {
-        return generatePDFExport(activityComparisonResult);
-    }
 
     public ByteArrayOutputStream buildPDFexport(Map<String, List<CompareOutput>> outputCollectionGrouped) {
-        //TODO you need to adjust writeUsingIText
-        ByteArrayOutputStream baos = null;
-        return baos;
-    }
-
-
-    private ByteArrayOutputStream generatePDFExport(List<ActivityComparisonResult> activityComparisonResult) {
+    	 ByteArrayOutputStream baos=null;
+     
+        
         try {
+
             Document document = new Document();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PdfWriter.getInstance(
-                    document, baos);
+           baos = new ByteArrayOutputStream();
+            PdfWriter.getInstance(document, baos);
             document.open();
-            PdfPTable mainLayout = buildPdfTable(2);
-            mainLayout.setWidths(new float[]{1f, 2f});
-            mainLayout.setWidthPercentage(100);
+            PdfPTable table = buildPdfTable(3);
+            table.setWidths(new float[]{1f, 2f});
+            table.setWidthPercentage(100);
             PdfPTableEvents event = new PdfPTableEvents();
-            mainLayout.setTableEvent(event);
-            mainLayout.getDefaultCell().setBorder(0);
+            table.setTableEvent(event);
+            table.getDefaultCell().setBorder(0);
             Font headerFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, new BaseColor(0, 0, 0));
 
             PdfPCell titleCell = new PdfPCell();
             //TODO this needs to be translatable
-            Paragraph p1 = new Paragraph("Activity difference", headerFont);
+            Paragraph p1 = new Paragraph("comparsion b/n activites", headerFont);
             p1.setAlignment(Element.ALIGN_CENTER);
             titleCell.addElement(p1);
-            titleCell.setColspan(2);
+            titleCell.setColspan(3);
             titleCell.setBackgroundColor(new BaseColor(0, 102, 153));
-            mainLayout.addCell(titleCell);
+            table.addCell(titleCell);
+            document.add(table);
 
-            for (ActivityComparisonResult cr : activityComparisonResult) {
-                createGeneralInfoRow(mainLayout, "Activity ", cr.getName());
-                //TODO here we are iterating the list, we need to iterate cr.getCompareOutput()
-                //TODO to actually build the each comparision
-                //TODO also we need to create the headers of the pdf
-                //TODO also you might need to add some methos to split the cell to the right into two so you can show previous
-                // and current value
+            Set<String> keyset = outputCollectionGrouped.keySet();
+            for (String key : keyset) {
+               PdfPCell mainCell = new PdfPCell();
+               Paragraph pmain = new Paragraph(key,headerFont);
+               pmain.setAlignment(Element.ALIGN_CENTER);
+               mainCell.addElement(pmain);
+               mainCell.setColspan(3);
+               table.addCell(mainCell);
+               
+             List<CompareOutput> nameList = outputCollectionGrouped.get(key);
+             CompareOutput comp = nameList.get(VALUE_NAME);
+              PdfPCell oldValueCell = new PdfPCell();
+               String[] value = comp.getStringOutput();
+               String oldValue = value[1];
+               Paragraph pold = new Paragraph(oldValue,headerFont);
+               oldValueCell.addElement(pold);
+ 
+               table.addCell(oldValueCell);
+               
+               PdfPCell newValueCell = new PdfPCell();
+               String newValue = value[0];
+               Paragraph pnew = new Paragraph(newValue,headerFont);
+               newValueCell.addElement(pnew);
+               table.addCell(newValueCell);
+               }
             }
-            document.add(mainLayout);
-            document.close();
-            return baos;
-
-
-        } catch (DocumentException e) {
+            
+         catch (DocumentException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return baos;
+
+            }
+        
+
+    private void createGeneralInfoRow(PdfPTable table, String columnName, String value) {
+        createGeneralInfoRow(table, columnName, "", value);
+
     }
 
-    private void createGeneralInfoRow(PdfPTable mainLayout, String columnName, String value) {
-        createGeneralInfoRow(mainLayout, columnName, "", value);
-
-    }
-
-    private void createGeneralInfoRow(PdfPTable mainLayout, String columnName, String label, String value) {
+    private void createGeneralInfoRow(PdfPTable table, String columnName, String label, String value) {
         if (value == null || value.isEmpty()) {
             return;
         }
@@ -110,11 +131,15 @@ public class AuditPDFexporter {
         cell1.addElement(p1);
         cell1.setBackgroundColor(BACKGROUND_COLOR);
         cell1.setBorder(0);
-        mainLayout.addCell(cell1);
+        table.addCell(cell1);
 
         PdfPCell cell2 = new PdfPCell(createGeneralInfoTable(label, value));
         cell2.setBorder(0);
-        mainLayout.addCell(cell2);
+        table.addCell(cell2);
+    }
+    
+    private void createCompareOutput(PdfPTable table, String columnName, String label, String value) {
+    	
     }
 
     private PdfPTable createGeneralInfoTable(String label, String value) {
@@ -149,6 +174,7 @@ public class AuditPDFexporter {
             float widths[] = width[0];
             PdfContentByte cb = canvas[PdfPTable.TEXTCANVAS];
             cb.saveState();
+            
             // border for the complete table
             cb.setLineWidth(1);
             cb.setRGBColorStroke(0, 0, 0);
@@ -157,4 +183,9 @@ public class AuditPDFexporter {
             cb.restoreState();
         }
     }
+
+	public ByteArrayOutputStream buildPDFexport1(List<ActivityComparisonResult> activityComparisonResultList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
