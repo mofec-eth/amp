@@ -58,13 +58,16 @@
 	<div id="content"  class="yui-skin-sam" style="padding: 5px;">
 		<div id="demo" class="yui-navset" style="font-family:Arial, Helvetica, sans-serif;font-size:10px;">
 			<ul id="MyTabs" class="yui-nav">
-				<li class="selected">
+				<li class="selected">			
 					<c:if test="${aimCompareActivityVersionsForm.method == 'compareAll'}">
 						<a><div><digi:trn>List of Activities Compared to their Previous Versions</digi:trn></div></a>
 					</c:if>
 					<c:if test="${aimCompareActivityVersionsForm.method != 'compareAll'}">
 						<a><div><digi:trn>Compare Activities</digi:trn></div></a>
 					</c:if>
+					<a target="_blank" onclick="xlsExport(); return false;" title="Export to Excel" style="cursor: pointer;"> 
+                <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
+                </a>
 				</li>
 			</ul>
 		</div>
@@ -131,6 +134,7 @@
 			</table>
 			<br/>
 			<input id="backButton" type="button" value="<digi:trn>Back to current version of the activity</digi:trn>" onclick="javascript:back()" />
+			<input id="exportButton" type="button" value="<digi:trn>Export to Excel</digi:trn>" onclick="javascript:xlsExport()" />
 		  	<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
 				<input id="mergeButton" type="button" value="<digi:trn>Enable Merge Process</digi:trn>" onclick="javascript:enableMerge();" />
 			</logic:equal>
@@ -143,10 +147,17 @@
 function back() {
     if (document.aimCompareActivityVersionsForm.method.value === "viewDifferences"){
         window.history.back();
+    }else if (document.aimCompareActivityVersionsForm.method.value === "xlsExport"){
+        window.history.back();
     }else {
         document.getElementById("method").value = "cancel";
         document.getElementById('compareForm').submit();
     }
+}
+
+function xlsExport() {
+	   document.aimCompareActivityVersionsForm.method.value = "xlsExport";
+	    document.aimCompareActivityVersionsForm.submit();
 }
 
 function enableMerge() {
@@ -240,7 +251,12 @@ if(document.getElementById('method').value == "enableMerge") {
     document.getElementById('saveButton').disabled = "disabled";
     document.getElementById('saveButton').style.display = 'none';
     document.getElementById('backButton').style.visibility = "hidden";
-}else {
+}else if (document.aimCompareActivityVersionsForm.method.value === "xlsExport"){
+    document.getElementById('saveButton').disabled = "disabled";
+    document.getElementById('saveButton').style.display = 'none';
+    $('#backButton').prop('value', '<digi:trn>Back to Audit Logger</digi:trn>');
+}
+else {
     document.getElementById('saveButton').disabled = "disabled";
     document.getElementById('saveButton').style.display = 'none';
 }
