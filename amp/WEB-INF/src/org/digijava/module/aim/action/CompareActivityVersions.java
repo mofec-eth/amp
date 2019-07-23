@@ -49,6 +49,8 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.itextpdf.text.Document;
+
 public class CompareActivityVersions extends DispatchAction {
 
     private static Logger logger = Logger.getLogger(EditActivity.class);
@@ -374,13 +376,14 @@ public class CompareActivityVersions extends DispatchAction {
             // TODO outputCollectionGrouped is NULL check why and see if we shouldn't calculate it before
             // TODO invoking exporter
             // TODO you need to catch errors and report the user why the pdf was not generated
-            baos = AuditPDFexporter.getInstance().buildPDFexport1(vForm.getActivityComparisonResultList());
+            baos = AuditPDFexporter.getInstance().buildPDFexport(vForm.getActivityComparisonResultList());
         } else {
             baos = AuditPDFexporter.getInstance().buildPDFexport(outputCollectionGrouped);
         }
 
         response.setContentType("application/pdf; charset=UTF-8");
         response.setHeader("content-disposition", "attachment;filename=activity.pdf");
+        Document document = new Document();
         response.setContentLength(baos.size());
         ServletOutputStream out = response.getOutputStream();
         baos.writeTo(out);

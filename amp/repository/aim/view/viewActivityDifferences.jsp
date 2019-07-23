@@ -65,9 +65,11 @@
 					<c:if test="${aimCompareActivityVersionsForm.method != 'compareAll'}">
 						<a><div><digi:trn>Compare Activities</digi:trn></div></a>
 					</c:if>
-					<a target="_blank" onclick="pdfExport(); return false;" title="Export to Excel"
+					<a target="_blank" onclick="pdfExport(); return false;" title="Export to PDF"
 					   style="cursor: pointer;">
 						<img src="/TEMPLATE/ampTemplate/images/icons/pdf.gif" border="0" hspace="2" vspace="2" alt="Export to PDF">
+						<input id="pdfExportButton" type="button" value="<digi:trn>Export to PDF</digi:trn>" onclick="javascript:pdfExport()" />
+						
 					</a>
 				</li>
 			</ul>
@@ -135,7 +137,6 @@
 			</table>
 			<br/>
 			<input id="backButton" type="button" value="<digi:trn>Back to current version of the activity</digi:trn>" onclick="javascript:back()" />
-			<input id="pdfExportButton" type="button" value="<digi:trn>Export to PDF</digi:trn>" onclick="javascript:pdfExport()" />
 			<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
 				<input id="mergeButton" type="button" value="<digi:trn>Enable Merge Process</digi:trn>" onclick="javascript:enableMerge();" />
 			</logic:equal>
