@@ -12,13 +12,18 @@ public class ActivityComparisonResult {
     private Long ampAuditLoggerId;
     private Map<String, List<CompareOutput>> compareOutput;
 
+    public ActivityComparisonResult(Long activityId, String name, Map<String, List<CompareOutput>> compareOutput) {
+        this.activityId = activityId;
+        this.name = name;
+        this.compareOutput = compareOutput;
+    }
+
     public ActivityComparisonResult(Long activityId, Map<String, List<CompareOutput>> compareOutput, String name,
                                     Long  ampAuditLoggerId) {
-        this.activityId = activityId;
-        this.compareOutput = compareOutput;
-        this.name = name;
+        this(activityId, name, compareOutput);
         this.ampAuditLoggerId = ampAuditLoggerId;
     }
+    
     public Long getActivityId() {
         return activityId;
     }

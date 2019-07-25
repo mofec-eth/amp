@@ -2,6 +2,7 @@ package org.digijava.module.aim.action;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -14,7 +15,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -49,7 +49,6 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.itextpdf.text.Document;
 
 public class CompareActivityVersions extends DispatchAction {
 
@@ -368,22 +367,21 @@ public class CompareActivityVersions extends DispatchAction {
     }
     public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
-        // System.out.println("EXPORT TO PDF");
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
         Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
         ByteArrayOutputStream baos;
+        List<ActivityComparisonResult> comparisonResult;
         if (vForm.getActivityOneId() == 0) {
-            // TODO outputCollectionGrouped is NULL check why and see if we shouldn't calculate it before
-            // TODO invoking exporter
-            // TODO you need to catch errors and report the user why the pdf was not generated
-            baos = AuditPDFexporter.getInstance().buildPDFexport(vForm.getActivityComparisonResultList());
+            comparisonResult = vForm.getActivityComparisonResultList();
         } else {
-            baos = AuditPDFexporter.getInstance().buildPDFexport(outputCollectionGrouped);
+            AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
+            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(av.getAmpActivityId(),
+                    av.getAmpId() + " " + av.getName(), outputCollectionGrouped)));
         }
+        baos = AuditPDFexporter.getInstance().buildPDFexport(comparisonResult);
 
         response.setContentType("application/pdf; charset=UTF-8");
         response.setHeader("content-disposition", "attachment;filename=activity.pdf");
-        Document document = new Document();
         response.setContentLength(baos.size());
         ServletOutputStream out = response.getOutputStream();
         baos.writeTo(out);
