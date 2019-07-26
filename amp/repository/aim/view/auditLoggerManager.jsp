@@ -8,6 +8,7 @@
 <%@ taglib uri="/taglib/jstl-functions" prefix="fn" %>
 
 <%@page import="org.digijava.module.aim.services.auditcleaner.AuditCleaner"%>
+<jsp:include page="/repository/aim/view/scripts/newCalendar.jsp"  />
 <style>
 .contentbox_border{
 	border:1px solid #666666;
@@ -40,6 +41,26 @@
 .Hovered {
 	background-color:#a5bcf2;
 }
+.divTable{
+	display: table;
+	width: 100%;
+}
+.divTableRow {
+	display: table-row;
+}
+.divTableCellLeft{
+	text-align: right;
+	font-weight: bold;
+}
+.divTableCell {
+	display: table-cell;
+	padding: 3px 10px;
+	width: 50%;
+}
+.divTableBody {
+	display: table-row-group;
+}
+
 
 </style>
 <script language="javascript">
@@ -66,6 +87,10 @@ function submitClean(){
 	document.aimAuditLoggerManagerForm.target = "_self";
 	document.aimAuditLoggerManagerForm.submit();
 }
+
+function submitFilter() {
+			document.aimAuditLoggerManagerForm.submit();
+	  }
 
 function toggleLoggs(){
 	log = document.getElementById("login").checked;
@@ -151,10 +176,52 @@ function toggleSettings(){
 	}
 }
 
+function toggleFilterSettings(){
+	var currentFilterSettings = $('#currentFilterSettings');
+	var displayFilterButton = $('#displayFilterButton');
+	if(currentFilterSettings.css('display') == "inline-flex"){
+		currentFilterSettings.hide();
+		$('#exportScorecard').hide();
+		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Showfilteroptions">Show Filter options</digi:trn>'+ ' &gt;&gt;');
+	}
+	else
+	{
+		currentFilterSettings.css('display', 'inline-flex');
+		$('#exportScorecard').css('display','inline-flex');
+		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Hidefilteroptions">Hide Filter options</digi:trn>'+ ' &lt;&lt;');	
+	}
+}
+
+function resetSearch() {
+	document.getElementById("userId").selectedIndex = 0;
+	document.getElementById("teamId").selectedIndex = 0;
+	document.getElementById("selectedDateFromText").value="";
+	document.getElementById("selectedDateToText").value="";
+    document.aimAuditLoggerManagerForm.action = "/aim/auditLoggerManager.do?action=reset";
+    document.aimAuditLoggerManagerForm.submit();
+}
+
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
+function viewDifferences(activityOneId) {
+    document.getElementById("compPrevForm").target = "_self";
+    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
+    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
+    document.aimCompareActivityVersionsForm.submit();
+}
 
+function compareAll(){
+    document.getElementById("compPrevForm").target = "_blank";
+    var user = document.getElementById("userId").value;
+    var team = document.getElementById("teamId").value;
+    document.aimCompareActivityVersionsForm.selectedUser.value = user;
+    document.aimCompareActivityVersionsForm.selectedTeam.value = team;
+    document.aimCompareActivityVersionsForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
+    document.aimCompareActivityVersionsForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
+    document.aimCompareActivityVersionsForm.method.value = "compareAll";
+    document.aimCompareActivityVersionsForm.submit();
+}
 </script>
 
 <h1 class="admintitle"><digi:trn key="aim:AuditLoggerManager">Audit Logger Manager</digi:trn></h1> 
@@ -209,8 +276,8 @@ function exportScorecard () {
 						<input type="checkbox" id="login" onchange="toggleLoggs()">${loginTr}
 					</c:if>
 				  
-				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleSettings();" id="displaySettingsButton"><digi:trn key="aim:Showcleanupoptions">Show cleanup options</digi:trn> &gt;&gt;</span>
-                                &nbsp;<br>
+				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleSettings();" id="displaySettingsButton"><digi:trn key="aim:Showcleanupoptions">Show cleanup options</digi:trn> &gt;&gt;<br></span>
+                                &nbsp;
 								<div style="display:none;background-color:#ffffff;padding:2px" id="currentDisplaySettings" >
                                  <table cellpadding="2" cellspacing="2" border="0" width="250px">
                                  <tr>
@@ -255,7 +322,83 @@ function exportScorecard () {
                             	</div>
                           		<br>
                           		
-                          		<jsp:include page="loggerQuickView.jsp" />  
+                          		<jsp:include page="loggerQuickView.jsp" />
+								<c:if
+										test="${aimAuditLoggerManagerForm.withLogin==false }">
+									<input type="button"
+										   title="<digi:trn>Click here to view full list of activities compared to its previous versions</digi:trn>"
+										   onclick="javascript:compareAll()" class="dr-menu"
+										   value="&nbsp;&nbsp;<digi:trn>Compare All</digi:trn>&nbsp;&nbsp;"
+										   style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
+								</c:if> <br>
+								
+				  
+				  <span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleFilterSettings();" id="displayFilterButton">
+					<c:set var="hiddenStyle" value="display:none;"/>
+					<c:set var="settingsTitle">
+						<digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn>
+					</c:set>
+					  <c:if test="${(not empty aimAuditLoggerManagerForm.selectedUser and aimAuditLoggerManagerForm.selectedUser !=-1 )
+					  or (not empty aimAuditLoggerManagerForm.selectedTeam and aimAuditLoggerManagerForm.selectedTeam != '-1' )
+					  or (not empty aimAuditLoggerManagerForm.selectedDateFrom ) or (not empty aimAuditLoggerManagerForm.selectedDateTo )}">
+						  <c:set var="hiddenStyle" value="display:inline-flex;"/>
+						  <c:set var="settingsTitle">
+							  <digi:trn key="aim:Showfilteroptions">Hide Filter options</digi:trn>
+						  </c:set>
+					  </c:if>
+
+				  <c:out value="${settingsTitle}"/> </span>
+                                &nbsp;<br>
+								<div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
+									<div class="divTable">
+										<div class="divTableBody">
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><digi:trn>User:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedUser" styleClass="inp-text" styleId="userId">
+													<html:option value="-1"><digi:trn>Select User</digi:trn> </html:option>
+													<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
+												</html:select></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><digi:trn>Team:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedTeam" styleClass="inp-text" styleId="teamId">
+													<html:option value="-1"><digi:trn>Select Team </digi:trn></html:option>
+													<html:options property="teamList"></html:options>
+												</html:select></div>
+											</div>
+											<c:set var="dateTr">
+												<digi:trn>Date</digi:trn>
+											</c:set>
+											<div class="divTableRow" >
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>From</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateFrom"><html:text property="selectedDateFrom" styleClass="inp-text" readonly="true" styleId="selectedDateFromText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateFrom","selectedDateFromText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateFromText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>To</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateTo">                                 	<html:text property="selectedDateTo" styleClass="inp-text" readonly="true" styleId="selectedDateToText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateTo","selectedDateToText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateToText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>"></div>
+												<div class="divTableCell"><input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimAuditLoggerManagerForm.reset();resetSearch()"></div>
+											</div>
+										</div>
+									</div>
+                                 </div>
+									</div>                        
+                            	</div>
+                          		<br>
                           		
 				<table width="100%" height="100%" cellpadding="0" cellspacing="0" bgColor=#ffffff id="auditloggertable">
 				<tr>
@@ -375,6 +518,11 @@ function exportScorecard () {
                                                                     </c:otherwise>
                                                                 </c:choose>				
                                         </td>
+								<c:if test="${aimAuditLoggerManagerForm.withLogin==false }">
+									<td width="129" align="center" valign="center"bgcolor="#C7D4DB"style="color: #376091;">
+										<b><digi:trn key="aim:viewDiff">View Differences</digi:trn></b>
+									</td>
+								</c:if>
 							</tr>
 							<logic:iterate name="aimAuditLoggerManagerForm" property="logs"
 								id="log" type="org.digijava.module.aim.dbentity.AmpAuditLogger">
@@ -442,6 +590,12 @@ function exportScorecard () {
 										<digi:trn>No Data</digi:trn>
 									</c:if>
 								</td>
+									<td>
+										<c:if test="${not empty log.objectId && log.objectType=='org.digijava.module.aim.dbentity.AmpActivityVersion'}">
+											<input type="button" title="<digi:trn>Click here to compare with previous version</digi:trn>" onclick="javascript:viewDifferences(${log.objectId})"
+												   class="dr-menu" value="&nbsp;&nbsp;<digi:trn>Compare</digi:trn>&nbsp;&nbsp;">
+										</c:if>
+									</td>
 							</tr>
                           </logic:iterate>
 						</table>
@@ -459,6 +613,8 @@ function exportScorecard () {
 							<c:set target="${urlParamsFirst}" property="page" value="1"/>
 							<c:set target="${urlParamsFirst}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsFirst}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+							<c:set target="${urlParamsFirst}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsFirst}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:firstpage">First Page</digi:trn>
 							</c:set>
@@ -469,6 +625,8 @@ function exportScorecard () {
 							<c:set target="${urlParamsPrevious}" property="page" value="${aimAuditLoggerManagerForm.currentPage -1}"/>
 							<c:set target="${urlParamsPrevious}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsPrevious}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+							<c:set target="${urlParamsPrevious}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsPrevious}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
 							<c:set var="translation">
 								<digi:trn key="aim:previouspage">Previous Page</digi:trn>
 							</c:set>|
@@ -486,6 +644,10 @@ function exportScorecard () {
 						<c:set target="${urlParams1}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 						<c:set target="${urlParams1}" property="page"><%=pages%></c:set>
 						<c:set target="${urlParams1}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+						<c:set target="${urlParams1}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+						<c:set target="${urlParams1}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+						<c:set target="${urlParams1}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+						<c:set target="${urlParams1}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						<c:if test="${aimAuditLoggerManagerForm.currentPage == pages && aimAuditLoggerManagerForm.pagesSize > 1}">
 							<font color="#FF0000"><%=pages%></font>
 							|	
@@ -494,7 +656,7 @@ function exportScorecard () {
 							<c:set var="translation">
 								<digi:trn key="aim:clickToViewNextPage">Click here to go to Next Page</digi:trn>
 							</c:set>
-							<digi:link href="/auditLoggerManager.do" name="urlParams1" title="${translation}" >
+							<digi:link href="/auditLoggerManager.do" name="urlParams1" title="${translation}" friendlyUrl="false">
 								<%=pages%>							
 							</digi:link>
 							|
@@ -505,8 +667,12 @@ function exportScorecard () {
 							<c:set target="${urlParamsNext}" property="page" value="${aimAuditLoggerManagerForm.currentPage+1}"/>
 							<c:set target="${urlParamsNext}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsNext}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+							<c:set target="${urlParamsNext}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsNext}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsNext}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsNext}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 							<c:set var="translation"> <digi:trn key="aim:nextpage">Next Page</digi:trn></c:set>
-							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}">
+							<digi:link  href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsNext" title="${translation}" friendlyUrl="false">
 								<span style="font-size: 8pt; font-family: Tahoma;"><digi:trn key="aim:next">Next</digi:trn></span>
 							</digi:link>
 							<jsp:useBean id="urlParamsLast" type="java.util.Map" class="java.util.HashMap" />|
@@ -515,19 +681,34 @@ function exportScorecard () {
 							<c:set target="${urlParamsLast}" property="page" value="${aimAuditLoggerManagerForm.pagesSize}" />
 							<c:set target="${urlParamsLast}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsLast}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						</c:if>
 						
 						<c:if test="${aimAuditLoggerManagerForm.pagesSize < aimAuditLoggerManagerForm.pagesToShow}">
 							<c:set target="${urlParamsLast}" property="sortBy" value="${aimAuditLoggerManagerForm.sortBy}" />
 							<c:set target="${urlParamsLast}" property="page" value="${aimAuditLoggerManagerForm.pagesSize}" />
 							<c:set target="${urlParamsLast}" property="withLogin" value="${aimAuditLoggerManagerForm.withLogin}" />
+							<c:set target="${urlParamsLast}" property="selectedUser" value="${aimAuditLoggerManagerForm.selectedUser}" />
+							<c:set target="${urlParamsLast}" property="selectedTeam" value="${aimAuditLoggerManagerForm.selectedTeam}" />
+							<c:set target="${urlParamsLast}" property="selectedDateFrom" value="${aimAuditLoggerManagerForm.selectedDateFrom}" />
+							<c:set target="${urlParamsLast}" property="selectedDateTo" value="${aimAuditLoggerManagerForm.selectedDateTo}" />
 						</c:if>
 						<c:set var="translation"><digi:trn key="aim:lastpage">Last Page</digi:trn></c:set>
-						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}">
+						<digi:link href="/auditLoggerManager.do" style="text-decoration=none" name="urlParamsLast" title="${translation}" friendlyUrl="false">
 							<span style="font-size: 8pt; font-family: Tahoma;">&gt;&gt;</span>
 						</digi:link>
 					</c:if>
-					<c:out value="${aimAuditLoggerManagerForm.currentPage}"/>&nbsp; 
+					<c:if test="${aimAuditLoggerManagerForm.withLogin==false }">
+						<input type="button"
+						   title="<digi:trn>Click to view list of activities compared to its previous versions</digi:trn>"
+						   onclick="javascript:compareAll()" class="dr-menu"
+						   value="&nbsp;&nbsp;<digi:trn>Compare All</digi:trn>&nbsp;&nbsp;"
+						   style="cursor: pointer; font-style: italic; float: right; margin: 0 1% 0.5% 2.8%;">
+					</c:if>
+					<c:out value="${aimAuditLoggerManagerForm.currentPage}"/>&nbsp;
 					<span style="font-size: 8pt; font-family: Tahoma;">
 					<digi:trn key="aim:of">of</digi:trn></span>&nbsp;
 					<span style="font-size: 8pt; font-family: Tahoma;">
@@ -553,4 +734,12 @@ function exportScorecard () {
 	setStripsTable("dataTable", "tableEven", "tableOdd");
 	setHoveredTable("dataTable", false);
 </script>
+</digi:form>
+<digi:form styleId="compPrevForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm" target="_self">
+	<input type="hidden" name="activityOneId" id="activityOneId" />
+	<input type="hidden" name="method" id="method" />
+	<input type="hidden" name="selectedUser" id="selectedUser" />
+	<input type="hidden" name="selectedTeam" id="selectedTeam" />
+	<input type="hidden" name="selectedDateFrom" id="selectedDateFrom" />
+	<input type="hidden" name="selectedDateTo" id="selectedDateTo" />
 </digi:form>

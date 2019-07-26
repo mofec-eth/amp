@@ -1,20 +1,21 @@
 package org.digijava.module.aim.action;
-import java.lang.reflect.Field;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -26,33 +27,29 @@ import org.apache.wicket.util.string.Strings;
 import org.digijava.kernel.entity.Locale;
 import org.digijava.kernel.persistence.PersistenceManager;
 import org.digijava.kernel.request.Site;
+import org.digijava.kernel.request.TLSUtils;
 import org.digijava.kernel.util.RequestUtils;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
-import org.digijava.module.aim.annotations.activityversioning.VersionableCollection;
-import org.digijava.module.aim.annotations.activityversioning.VersionableFieldSimple;
-import org.digijava.module.aim.annotations.activityversioning.VersionableFieldTextEditor;
 import org.digijava.module.aim.dbentity.AmpActivityContact;
 import org.digijava.module.aim.dbentity.AmpActivityFields;
 import org.digijava.module.aim.dbentity.AmpActivityGroup;
 import org.digijava.module.aim.dbentity.AmpActivityVersion;
 import org.digijava.module.aim.dbentity.AmpTeamMember;
-import org.digijava.module.aim.dbentity.Versionable;
 import org.digijava.module.aim.form.CompareActivityVersionsForm;
-import org.digijava.module.aim.helper.ActivityHistory;
 import org.digijava.module.aim.helper.Constants;
-import org.digijava.module.aim.helper.FormatHelper;
 import org.digijava.module.aim.helper.TeamMember;
+import org.digijava.module.aim.util.versioning.ActivityComparisonContext;
+import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 import org.digijava.module.aim.util.ActivityUtil;
 import org.digijava.module.aim.util.ActivityVersionUtil;
 import org.digijava.module.aim.util.AuditLoggerUtil;
 import org.digijava.module.aim.util.LuceneUtil;
 import org.digijava.module.aim.util.TeamMemberUtil;
-import org.digijava.module.editor.util.DbUtil;
 import org.digijava.module.translation.util.ContentTranslationUtil;
 import org.hibernate.FlushMode;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 
 public class CompareActivityVersions extends DispatchAction {
 
@@ -88,26 +85,28 @@ public class CompareActivityVersions extends DispatchAction {
             //activity.setModifiedDate(Calendar.getInstance().getTime()); 
             group.setAmpActivityLastVersion(activity);
             session.update(group);
-            //session.update(activity);
 
             Site site = RequestUtils.getSite(request);
             Locale navigationLanguage = RequestUtils.getNavigationLanguage(request);
             java.util.Locale locale = new java.util.Locale(navigationLanguage.getCode());
-            LuceneUtil.addUpdateActivity(request.getSession().getServletContext().getRealPath("/"), true, site, locale, activity, prevVer);
+            LuceneUtil.addUpdateActivity(request.getSession().getServletContext().getRealPath("/"), true, site, locale,
+                    activity, prevVer);
             
-            return new ActionForward(mapping.findForward("reload").getPath() + "?ampActivityId=" + activityId,true);
+            return new ActionForward(mapping.findForward("reload").getPath() + "?ampActivityId=" + activityId, true);
         }
 
         vForm.setOutputCollection(new ArrayList<CompareOutput>());
-      
-       vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId(),
-          vForm.getActivityTwoId()));
+        ActivityComparisonContext context = new ActivityComparisonContext(TLSUtils.getSite().getId(),
+                TLSUtils.getSite().getName(), TLSUtils.getEffectiveLangCode());
+
+        vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId(),
+          vForm.getActivityTwoId(), context));
        
     
         return mapping.findForward("forward");
     }
 
-    private void modifyFundingOutputs (Map<String, List<CompareOutput>> outputGroupped) {
+    private void modifyFundingOutputs(Map<String, List<CompareOutput>> outputGroupped) {
 
 
     }
@@ -160,7 +159,8 @@ public class CompareActivityVersions extends DispatchAction {
                 // The user didn't select a value, then is empty (this is
                 // important because the merged activity is a copy of one of the
                 // compared versions).
-                newOutput.setOriginalValueOutput(new Object[] { null, auxOutput.getOriginalValueOutput()[0] }); //remove the one from right 
+                newOutput.setOriginalValueOutput(new Object[] { null, auxOutput.getOriginalValueOutput()[0] });
+                //remove the one from right 
 
                 // Raise error if mandatory fields have no values.
                 if (newOutput.getMandatoryForSingleChangeOutput()) {
@@ -238,7 +238,7 @@ public class CompareActivityVersions extends DispatchAction {
                     //session.update(auxActivity);
                 }
                 
-                if (remOriginalValueObject != null){
+                if (remOriginalValueObject != null) {
                     Class[] params = auxMethod.getParameterTypes();
                     if (params != null && params[0].getName().contains("java.util.Set")) {
                         Class clazz = remOriginalValueObject.getClass();
@@ -257,18 +257,17 @@ public class CompareActivityVersions extends DispatchAction {
                                 Object tmp = (Object) it.next();
                                 Long tmpId = (Long) method.invoke(tmp);
                                 
-                                if (tmpId.compareTo(remId) == 0){
+                                if (tmpId.compareTo(remId) == 0) {
                                     it.remove();
                                     break;
                                 }
                             }
                         }
                         auxMethod.invoke(oldActivity, auxSet);
-                    }
-                    else{
-                        if (addOriginalValueObject == null){
+                    } else {
+                        if (addOriginalValueObject == null) {
                             // this is the case where no value was selected;
-                            auxMethod.invoke(oldActivity, (Object)null);
+                            auxMethod.invoke(oldActivity, (Object) null);
                         }
                     }
                 }
@@ -303,9 +302,9 @@ public class CompareActivityVersions extends DispatchAction {
             AmpActivityContact actCont;
             Set<AmpActivityContact> contacts = new HashSet<AmpActivityContact>();
             Set<AmpActivityContact> activityContacts = auxActivity.getActivityContacts();
-            if (activityContacts != null){
+            if (activityContacts != null) {
                 Iterator<AmpActivityContact> it = activityContacts.iterator();
-                while(it.hasNext()){
+                while (it.hasNext()) {
                     actCont = it.next();
                     actCont.setId(null);
                     actCont.setActivity(auxActivity);
@@ -322,7 +321,8 @@ public class CompareActivityVersions extends DispatchAction {
             Site site = RequestUtils.getSite(request);
             Locale navigationLanguage = RequestUtils.getNavigationLanguage(request);
             java.util.Locale locale = new java.util.Locale(navigationLanguage.getCode());
-            LuceneUtil.addUpdateActivity(request.getSession().getServletContext().getRealPath("/"), true, site, locale, auxActivity, prevVersion);
+            LuceneUtil.addUpdateActivity(request.getSession().getServletContext().getRealPath("/"), true, site, locale,
+                    auxActivity, prevVersion);
             AuditLoggerUtil.logObject(request, auxActivity, "add", "merged");
         } catch (Exception e) {
             logger.error("Can't save merged activity:", e);
@@ -333,22 +333,84 @@ public class CompareActivityVersions extends DispatchAction {
         return mapping.findForward("index");
     }
 
-    private void setAdvancemode(CompareActivityVersionsForm vForm, HttpServletRequest request){
+    private void setAdvancemode(CompareActivityVersionsForm vForm, HttpServletRequest request) {
         boolean ispartofamanagetmentworkspace = false;
         boolean iscurrentworkspacemanager = false;
         
-        TeamMember currentMember = (TeamMember)request.getSession().getAttribute("currentMember");
+        TeamMember currentMember = (TeamMember) request.getSession().getAttribute("currentMember");
         AmpTeamMember ampCurrentMember = TeamMemberUtil.getAmpTeamMember(currentMember.getMemberId());
         
-        if (ampCurrentMember.getAmpMemberRole().getTeamHead())
+        if (ampCurrentMember.getAmpMemberRole().getTeamHead()) {
             iscurrentworkspacemanager = true;
-        if (ampCurrentMember.getAmpTeam().getAccessType().equalsIgnoreCase(Constants.ACCESS_TYPE_MNGMT))
+        }
+        if (ampCurrentMember.getAmpTeam().getAccessType().equalsIgnoreCase(Constants.ACCESS_TYPE_MNGMT)) {
             ispartofamanagetmentworkspace = true;
+        }
         
-        //If the current user is part of the management workspace or is not the workspace manager of a workspace that's not management then hide.
+        // If the current user is part of the management workspace or is not the
+        // workspace manager of a workspace that's not management then hide.
         vForm.setAdvancemode(!ispartofamanagetmentworkspace & iscurrentworkspacemanager);
     }
-    
-   
 
+    public ActionForward viewDifferences(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId()));
+
+        return mapping.findForward("forward");
+    }
+
+    public ActionForward compareAll(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                    HttpServletResponse response) throws Exception {
+
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        vForm.populateEffectiveFilters();
+        vForm.setActivityComparisonResultList(ActivityVersionUtil.
+                getOutputCollectionGrouped(vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(),
+                        vForm.getEffectiveDateFrom(), vForm.getEffectiveDateTo()));
+
+        return mapping.findForward("forward");
+    }
+    public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                   HttpServletResponse response) throws Exception {
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
+        ByteArrayOutputStream baos;
+        List<ActivityComparisonResult> comparisonResult;
+        if (vForm.getActivityOneId() == 0) {
+            comparisonResult = vForm.getActivityComparisonResultList();
+        } else {
+            AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
+            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(av.getAmpActivityId(),
+                    av.getAmpId() + " " + av.getName(), outputCollectionGrouped)));
+        }
+        baos = AuditPDFexporter.getInstance().buildPDFexport(comparisonResult);
+
+        response.setContentType("application/pdf; charset=UTF-8");
+        response.setHeader("content-disposition", "attachment;filename=activity.pdf");
+        response.setContentLength(baos.size());
+        ServletOutputStream out = response.getOutputStream();
+        baos.writeTo(out);
+        out.flush();
+        return null;
+    }
+	
+   public ActionForward xlsExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", "inline; filename=AuditLogger.xls");
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        AuditExcelExporter auditExcelExporter = new AuditExcelExporter();
+        if (vForm.getActivityOneId() == 0) {
+            List<ActivityComparisonResult> outputCollection = vForm.getActivityComparisonResultList();
+            HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollection);
+            wb.write(response.getOutputStream());
+        } else {
+            Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
+            HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollectionGrouped);
+            wb.write(response.getOutputStream());
+        }
+        return null;
+    }	
 }

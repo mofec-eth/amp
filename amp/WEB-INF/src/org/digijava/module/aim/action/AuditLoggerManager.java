@@ -26,12 +26,16 @@ import org.digijava.module.aim.dbentity.AmpAuditLogger;
 import org.digijava.module.aim.form.AuditLoggerManagerForm;
 import org.digijava.module.aim.util.AuditLoggerUtil;
 
+import org.digijava.module.um.util.AmpUserUtil;
+
 public class AuditLoggerManager extends MultiAction {
-    
+    private static final Integer PAGES_TO_SHOW = 10;
+    private static final Integer TOTAL_RECORDS = 20;
+
     public ActionForward modePrepare(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
+                                     HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        
+
         AuditLoggerManagerForm vForm = (AuditLoggerManagerForm) form;
         if (request.getParameter("clean") != null) {
             if (vForm.getUseraction().equalsIgnoreCase("delete")) {
@@ -61,12 +65,20 @@ public class AuditLoggerManager extends MultiAction {
             }
                 
         }
-        Collection<AmpAuditLogger> logs=AuditLoggerUtil.getLogObjects(vForm.isWithLogin());
-        
-        if (request.getParameter("sortBy")!=null){
+
+
+        vForm.populateEffectiveFilters();
+        Collection<AmpAuditLogger> logs = AuditLoggerUtil.getLogObjects(vForm.isWithLogin(),
+                vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(), vForm.getEffectiveDateFrom(),
+                vForm.getEffectiveDateTo());
+
+        if (request.getParameter("sortBy") != null) {
             vForm.setSortBy(request.getParameter("sortBy"));
         }
-        if(vForm.getSortBy()!=null){
+           
+        vForm.setUserList(AmpUserUtil.getAllUsers(false));
+
+        if (vForm.getSortBy() != null) {
                     Long siteId = RequestUtils.getSiteDomain(request).getSite().getId();
                     String langCode = RequestUtils.getNavigationLanguage(request).getCode();
               if(vForm.getSortBy().equalsIgnoreCase("nameasc")){
@@ -138,8 +150,10 @@ public class AuditLoggerManager extends MultiAction {
 
                           }
         }
-        vForm.setPagesToShow(10);
-        int totalrecords=20;
+        vForm.setTeamList(AuditLoggerUtil.getTeamFromLog());
+        
+        vForm.setPagesToShow(PAGES_TO_SHOW);
+        int totalrecords = TOTAL_RECORDS;
         int page = 0;
         if (request.getParameter("page") == null) {
             page = 1;
@@ -179,7 +193,7 @@ public class AuditLoggerManager extends MultiAction {
         }
         return  modeSelect(mapping, form, request, response);
     }
-
+    
     public ActionForward modeSelect(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         return mapping.findForward("forward");
     }
@@ -249,5 +263,5 @@ public class AuditLoggerManager extends MultiAction {
         
         
     }
-    
 }
+
