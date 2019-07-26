@@ -204,12 +204,6 @@ function resetSearch() {
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
-function exportPdf(activityOneId){
-	document.getElementById("compPrevForm").target = "_self";
-	document.aimCompareActivityVersionsForm.method.value = "pdfExport";
-	document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
-	document.aimCompareActivityVersionsForm.submit();
-}
 function viewDifferences(activityOneId) {
     document.getElementById("compPrevForm").target = "_self";
     document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
@@ -600,8 +594,6 @@ function compareAll(){
 										<c:if test="${not empty log.objectId && log.objectType=='org.digijava.module.aim.dbentity.AmpActivityVersion'}">
 											<input type="button" title="<digi:trn>Click here to compare with previous version</digi:trn>" onclick="javascript:viewDifferences(${log.objectId})"
 												   class="dr-menu" value="&nbsp;&nbsp;<digi:trn>Compare</digi:trn>&nbsp;&nbsp;">
-											<input type="button" title="<digi:trn>Export to PDF</digi:trn>" onclick="javascript:exportPdf(${log.objectId})"
-												   class="dr-menu" value="&nbsp;&nbsp;<digi:trn>Export to PDF</digi:trn>&nbsp;&nbsp;">
 										</c:if>
 									</td>
 							</tr>
