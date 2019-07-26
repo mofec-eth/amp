@@ -1,6 +1,8 @@
 package org.digijava.module.aim.action;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -45,6 +49,7 @@ import org.digijava.module.translation.util.ContentTranslationUtil;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 
 public class CompareActivityVersions extends DispatchAction {
 
@@ -367,8 +372,31 @@ public class CompareActivityVersions extends DispatchAction {
 
         return mapping.findForward("forward");
     }
-    
-    public ActionForward xlsExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+    public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                   HttpServletResponse response) throws Exception {
+        CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
+        ByteArrayOutputStream baos;
+        List<ActivityComparisonResult> comparisonResult;
+        if (vForm.getActivityOneId() == 0) {
+            comparisonResult = vForm.getActivityComparisonResultList();
+        } else {
+            AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
+            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(av.getAmpActivityId(),
+                    av.getAmpId() + " " + av.getName(), outputCollectionGrouped)));
+        }
+        baos = AuditPDFexporter.getInstance().buildPDFexport(comparisonResult);
+
+        response.setContentType("application/pdf; charset=UTF-8");
+        response.setHeader("content-disposition", "attachment;filename=activity.pdf");
+        response.setContentLength(baos.size());
+        ServletOutputStream out = response.getOutputStream();
+        baos.writeTo(out);
+        out.flush();
+        return null;
+    }
+	
+   public ActionForward xlsExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-disposition", "inline; filename=AuditLogger.xls");
@@ -384,5 +412,5 @@ public class CompareActivityVersions extends DispatchAction {
             wb.write(response.getOutputStream());
         }
         return null;
-    }
+    }	
 }

@@ -204,7 +204,6 @@ function resetSearch() {
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
-
 function viewDifferences(activityOneId) {
     document.getElementById("compPrevForm").target = "_self";
     document.aimCompareActivityVersionsForm.method.value = "viewDifferences";

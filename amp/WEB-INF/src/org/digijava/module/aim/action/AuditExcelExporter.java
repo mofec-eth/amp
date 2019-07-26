@@ -10,6 +10,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.digijava.kernel.request.TLSUtils;
 import org.digijava.kernel.translator.TranslatorWorker;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
+import org.digijava.module.aim.util.ActivityVersionUtil;
+import org.digijava.module.aim.util.AuditLoggerUtil;
 import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -138,13 +140,13 @@ public  class AuditExcelExporter {
             HSSFCell groupcell = valueRow.createCell(cellIndex++);
             String[] value = comp.getStringOutput();
             String oldValue = value[1];
-            String old = auditXLSExportService.htmlToXLSFormat(oldValue);
+            String old = ActivityVersionUtil.sanitizeHtmlForExport(oldValue);
             rowIndex = checkMaxCellLimit(old, sheet, rowIndex, cellIndex, groupcell);
             groupcell.setCellStyle(cs);
 
             HSSFCell newcell = valueRow.createCell(cellIndex);
             String newValue = value[0];
-            String newVal = auditXLSExportService.htmlToXLSFormat(newValue);
+            String newVal = ActivityVersionUtil.sanitizeHtmlForExport(newValue);
             rowIndex = checkMaxCellLimit(newVal, sheet, rowIndex, cellIndex, newcell);
             rowIndex++;
             newcell.setCellStyle(cs);

@@ -28,12 +28,16 @@ public  class AuditXLSExportService {
             fontHeader.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
             titleCS.setAlignment(HSSFCellStyle.ALIGN_CENTER);
             titleCS.setFont(fontHeader);
-            titleCS.setBorderLeft(BORDER_THIN);
-            titleCS.setBorderRight(BORDER_THIN);
-            titleCS.setBorderTop(BORDER_THIN);
-            titleCS.setBorderBottom(BORDER_THIN);
+            addBorderToCell(titleCS);
         }
         return titleCS;
+    }
+
+    private void addBorderToCell(HSSFCellStyle cell) {
+        cell.setBorderLeft(BORDER_THIN);
+        cell.setBorderRight(BORDER_THIN);
+        cell.setBorderTop(BORDER_THIN);
+        cell.setBorderBottom(BORDER_THIN);
     }
 
     public HSSFCellStyle getOrCreateOrdinaryStyle(HSSFWorkbook wb) {
@@ -41,21 +45,10 @@ public  class AuditXLSExportService {
             cs = wb.createCellStyle();
             cs.setWrapText(true);
             cs.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
-            cs.setBorderBottom(BORDER_THIN);
-            cs.setBorderLeft(BORDER_THIN);
-            cs.setBorderRight(BORDER_THIN);
-            cs.setBorderTop(BORDER_THIN);
+            addBorderToCell(cs);
         }
         return cs;
     }
-
-    public String htmlToXLSFormat(String stringToFormat) {
-        String newValue = stringToFormat.toString().replaceAll("\\<.*?>", "");
-        String newValues = newValue.replaceAll("&nbsp;", "\n");
-        String newVal = newValues.replaceAll("<br>", "");
-        return newVal;
-    }
-
     public void setColumnWidth(HSSFSheet sheet) {
         sheet.setColumnWidth(0, first_COLUMN_WIDTH);
         sheet.setColumnWidth(1, COLUMN_WIDTH);

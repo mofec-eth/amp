@@ -65,9 +65,13 @@
 					<c:if test="${aimCompareActivityVersionsForm.method != 'compareAll'}">
 						<a><div><digi:trn>Compare Activities</digi:trn></div></a>
 					</c:if>
-					<a target="_blank" onclick="xlsExport(); return false;" title="Export to Excel" style="cursor: pointer;"> 
+					<a target="_blank" onclick="generateExport('pdfExport'); return false;" title="Export to PDF"
+					   style="cursor: pointer;">
+						<img src="/TEMPLATE/ampTemplate/images/icons/pdf.gif" border="0" hspace="2" vspace="2" alt="Export to PDF">
+					</a>
+				<a target="_blank" onclick="generateExport('xlsExport'); return false;" title="Export to Excel" style="cursor: pointer;">
                 <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
-                </a>
+                </a>					
 				</li>
 			</ul>
 		</div>
@@ -134,8 +138,8 @@
 			</table>
 			<br/>
 			<input id="backButton" type="button" value="<digi:trn>Back to current version of the activity</digi:trn>" onclick="javascript:back()" />
-			<input id="exportButton" type="button" value="<digi:trn>Export to Excel</digi:trn>" onclick="javascript:xlsExport()" />
-		  	<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
+			<input id="exportButton" type="button" value="<digi:trn>Export to Excel</digi:trn>" onclick="javascript:generateExport('xlsExport');" />
+			<logic:equal name="aimCompareActivityVersionsForm" property="advancemode" value="true">
 				<input id="mergeButton" type="button" value="<digi:trn>Enable Merge Process</digi:trn>" onclick="javascript:enableMerge();" />
 			</logic:equal>
 			<input id="saveButton" type="button" value="<digi:trn>Save New Activity</digi:trn>" onclick="javascript:save();" />
@@ -145,19 +149,21 @@
 
 <script language="Javascript">
 function back() {
-    if (document.aimCompareActivityVersionsForm.method.value === "viewDifferences"){
-        window.history.back();
-    }else if (document.aimCompareActivityVersionsForm.method.value === "xlsExport"){
-        window.history.back();
-    }else {
-        document.getElementById("method").value = "cancel";
-        document.getElementById('compareForm').submit();
-    }
+	if (document.aimCompareActivityVersionsForm.method.value === "viewDifferences") {
+		window.history.back();
+	} else if (document.aimCompareActivityVersionsForm.method.value === "pdfExport") {
+		window.history.back();
+	} else if (document.aimCompareActivityVersionsForm.method.value === "xlsExport") {
+		window.history.back();
+	} else {
+		document.getElementById("method").value = "cancel";
+		document.getElementById('compareForm').submit();
+	}
 }
 
-function xlsExport() {
-	   document.aimCompareActivityVersionsForm.method.value = "xlsExport";
-	    document.aimCompareActivityVersionsForm.submit();
+function generateExport(method){
+	document.aimCompareActivityVersionsForm.method.value = method;
+	document.aimCompareActivityVersionsForm.submit();
 }
 
 function enableMerge() {
@@ -251,14 +257,14 @@ if(document.getElementById('method').value == "enableMerge") {
     document.getElementById('saveButton').disabled = "disabled";
     document.getElementById('saveButton').style.display = 'none';
     document.getElementById('backButton').style.visibility = "hidden";
-}else if (document.aimCompareActivityVersionsForm.method.value === "xlsExport"){
-    document.getElementById('saveButton').disabled = "disabled";
-    document.getElementById('saveButton').style.display = 'none';
-    $('#backButton').prop('value', '<digi:trn>Back to Audit Logger</digi:trn>');
+}else if (document.aimCompareActivityVersionsForm.method.value === "pdfExport" || document.aimCompareActivityVersionsForm.method.value === "xlsExport"){
+	document.getElementById('saveButton').disabled = "disabled";
+	document.getElementById('saveButton').style.display = 'none';
+	$('#backButton').prop('value', '<digi:trn>Back to Audit Logger</digi:trn>');
 }
 else {
-    document.getElementById('saveButton').disabled = "disabled";
-    document.getElementById('saveButton').style.display = 'none';
+	document.getElementById('saveButton').disabled = "disabled";
+	document.getElementById('saveButton').style.display = 'none';
 }
 </script>
 		
