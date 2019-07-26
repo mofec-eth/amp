@@ -15,6 +15,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.digijava.kernel.request.TLSUtils;
 import org.digijava.kernel.translator.TranslatorWorker;
 import org.digijava.module.aim.annotations.activityversioning.CompareOutput;
+import org.digijava.module.aim.util.ActivityVersionUtil;
 import org.digijava.module.aim.util.versioning.ActivityComparisonResult;
 
 import java.io.ByteArrayOutputStream;
@@ -81,6 +82,8 @@ public final class AuditPDFexporter {
         generateSimpleCell(mainLayout, TranslatorWorker.translateText("Activity difference",
                 TLSUtils.getEffectiveLangCode(), TLSUtils.getSiteId()), Header.ALIGN_CENTER, HEADER_FONT,
                 HEADER_BRACKGROUND_COLOR, HEADER_COLSPAN);
+
+
         generateSimpleCell(mainLayout, TranslatorWorker.translateText("Value Name",
                 TLSUtils.getEffectiveLangCode(), TLSUtils.getSiteId()), Header.ALIGN_CENTER, HEADER_FONT,
                 HEADER_BRACKGROUND_COLOR, null);
@@ -90,6 +93,7 @@ public final class AuditPDFexporter {
         generateSimpleCell(mainLayout, TranslatorWorker.translateText("New Version",
                 TLSUtils.getEffectiveLangCode(), TLSUtils.getSiteId()), Header.ALIGN_CENTER, HEADER_FONT,
                 HEADER_BRACKGROUND_COLOR, null);
+
         return mainLayout;
 
 
@@ -100,10 +104,10 @@ public final class AuditPDFexporter {
         for (String key : keyset) {
             List<CompareOutput> nameList = outputCollectionGrouped.get(key);
             CompareOutput comp = nameList.get(VALUE_NAME);
-            generateSimpleCell(mainLayout, htmlToPDFFormat(key), Element.ALIGN_CENTER, PLAIN_FONT,
+            generateSimpleCell(mainLayout, ActivityVersionUtil.sanitizeHtmlForExport(key), Element.ALIGN_CENTER, PLAIN_FONT,
                     null, null);
-            generateSimpleCell(mainLayout, htmlToPDFFormat(comp.getStringOutput()[1]));
-            generateSimpleCell(mainLayout, htmlToPDFFormat(comp.getStringOutput()[0]));
+            generateSimpleCell(mainLayout, ActivityVersionUtil.sanitizeHtmlForExport(comp.getStringOutput()[1]));
+            generateSimpleCell(mainLayout, ActivityVersionUtil.sanitizeHtmlForExport(comp.getStringOutput()[0]));
 
         }
     }
@@ -134,11 +138,5 @@ public final class AuditPDFexporter {
         PdfPTable table = new PdfPTable(columns);
         return table;
     }
-    //TODO this code is dupe from xls we should merge them once we merge the code
-    private String htmlToPDFFormat(String stringToFormat) {
-        String newValue = stringToFormat.toString().replaceAll("\\<.*?>", "");
-        String newValues = newValue.replaceAll("&nbsp;", "\n");
-        String newVal = newValues.replaceAll("<br>", "");
-        return newVal;
-    }
+
 }

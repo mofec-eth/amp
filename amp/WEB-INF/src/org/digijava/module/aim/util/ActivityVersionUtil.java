@@ -812,7 +812,11 @@ public class ActivityVersionUtil {
          }
          return retVal;
     }
-     
-    
-    
+    //TODO this code is dupe from xls we should merge them once we merge the code
+    public static String sanitizeHtmlForExport(String stringToFormat) {
+        String newValue = stringToFormat.toString().replaceAll("\\<.*?>", "");
+        String newValues = newValue.replaceAll("&nbsp;", "\n");
+        String newVal = newValues.replaceAll("<br>", "");
+        return newVal;
+    }
 }
