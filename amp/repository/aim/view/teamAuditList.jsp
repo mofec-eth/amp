@@ -20,6 +20,12 @@ function showUser(email){
 	}
 }
 
+function compare(id){
+	 document.aimCompareActivityVersionsForm.activityOneId.value = id;
+	 document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
+	 document.aimCompareActivityVersionsForm.submit();
+	}
+
 
 </script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
@@ -215,6 +221,11 @@ function showUser(email){
 											</c:if>
 										</b>
 									</td>
+									<td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif" class="inside">
+                                    <b class="ins_title">
+                                    <digi:trn key="aim:action"> View differences</digi:trn>
+                                    </b>
+                                 </td>
 								</tr>
 								
 								
@@ -276,6 +287,11 @@ function showUser(email){
 												<digi:trn key="admin:update">Update</digi:trn>
 											</logic:equal>								  
 										</td>
+										<td width="50" class="inside">
+                                        <div style="text-align:center">
+                                        <input type="button" value="Compare" onclick="javascript:compare(${log.objectId})" class="dr-menu">
+                                        </div>
+                                        </td>
 									</tr>
 								</logic:iterate>
 							</table>
@@ -373,4 +389,8 @@ function showUser(email){
 	</tr>
 </table>
 
+</digi:form>
+<digi:form action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm">
+<input type="hidden" name="activityOneId" id="activityOneId">
+<input type="hidden" name="method" id="method">
 </digi:form>
