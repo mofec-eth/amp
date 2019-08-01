@@ -20,13 +20,6 @@ function showUser(email){
 	}
 }
 
-function compare(id){
-	 document.aimCompareActivityVersionsForm.activityOneId.value = id;
-	 document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
-	 document.aimCompareActivityVersionsForm.submit();
-	}
-
-
 </script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
 <c:set target="${bcparams}" property="tId" value="-1"/>
@@ -221,13 +214,11 @@ function compare(id){
 											</c:if>
 										</b>
 									</td>
-									<td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif" class="inside">
-                                    <b class="ins_title">
-                                    <digi:trn key="aim:action"> View differences</digi:trn>
-                                    </b>
-                                 </td>
-								</tr>
-								
+										<td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif"
+											class="inside"><b class="ins_title"> <digi:trn
+													key="aim:action"> View differences</digi:trn>
+										</b></td>
+									</tr>					
 								
 								<logic:iterate name="aimTeamAuditListForm" property="logs" id="log" type="org.digijava.module.aim.dbentity.AmpAuditLogger">
 									<tr>
@@ -289,7 +280,7 @@ function compare(id){
 										</td>
 										<td width="50" class="inside">
                                         <div style="text-align:center">
-                                        <input type="button" value="Compare" onclick="javascript:compare(${log.objectId})" class="dr-menu">
+                                        <input type="button" value="<digi:trn>Compare</digi:trn>" onclick="javascript:viewDifferences(${log.objectId})" class="dr-menu">
                                         </div>
                                         </td>
 									</tr>
@@ -394,3 +385,5 @@ function compare(id){
 <input type="hidden" name="activityOneId" id="activityOneId">
 <input type="hidden" name="method" id="method">
 </digi:form>
+
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>
