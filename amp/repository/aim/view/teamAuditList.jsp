@@ -20,6 +20,12 @@ function showUser(email){
 	}
 }
 
+function compare(activityOneId) {
+    document.getElementById("compPrevForm").target = "_self";
+    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
+    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
+    document.aimCompareActivityVersionsForm.submit();
+}
 
 </script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
@@ -202,6 +208,7 @@ function showUser(email){
 											<c:if test="${aimTeamAuditListForm.sortBy!='actionasc'}">
 												<digi:link style="color:black" href="/teamAuditList.do?sortBy=actionasc" styleClass="l_sm">
 													<digi:trn key="aim:action">Action</digi:trn>
+													
                                                     <c:if test="${aimTeamAuditListForm.sortBy=='actiondesc'}">
                                                         <img id="activityColumnImg" src="/repository/aim/images/up.gif" />
                                                     </c:if>
@@ -215,6 +222,13 @@ function showUser(email){
 											</c:if>
 										</b>
 									</td>
+									<td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif" class="inside">
+									<b class="ins_title" ></b>
+								   <b style="color:green">
+                                   <digi:trn key="aim:action"> View differences</digi:trn>
+                                   </b>
+									
+								</td>
 								</tr>
 								
 								
@@ -274,7 +288,16 @@ function showUser(email){
 											</logic:equal>
 											<logic:equal value="update" property="action" name="log">
 												<digi:trn key="admin:update">Update</digi:trn>
-											</logic:equal>								  
+											</logic:equal>
+											
+									       														  
+										</td>
+										<td width="100" class="inside">
+										 <input type="button" title="<digi:trn>Click here to view full list of activities compared to its previous versions</digi:trn>"
+										   onclick="javascript:compare(${log.objectId})" class="dr-menu"
+										   value="&nbsp;&nbsp;<digi:trn>Compare</digi:trn>&nbsp;&nbsp;"
+										   style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
+								
 										</td>
 									</tr>
 								</logic:iterate>
@@ -374,3 +397,7 @@ function showUser(email){
 </table>
 
 </digi:form>
+   <digi:form styleId="compPrevForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm" target="_self">
+	<input type="hidden" name="activityOneId" id="activityOneId" />
+	<input type="hidden" name="method" id="method" />
+   </digi:form>
