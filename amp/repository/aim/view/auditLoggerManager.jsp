@@ -63,8 +63,7 @@
 
 
 </style>
-<script language="javascript">
-
+<script language="javascript" src="/repository/aim/view/scripts/viewComparesionDifferences.js"></script>
 function actionChanged(value){
 	var header = document.getElementById("frecuencyHeaderId");
 	if (header!= null){
@@ -204,12 +203,7 @@ function resetSearch() {
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
-function viewDifferences(activityOneId) {
-    document.getElementById("compPrevForm").target = "_self";
-    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
-    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
-    document.aimCompareActivityVersionsForm.submit();
-}
+
 
 function compareAll(){
     document.getElementById("compPrevForm").target = "_blank";
@@ -223,7 +217,7 @@ function compareAll(){
     document.aimCompareActivityVersionsForm.submit();
 }
 </script>
-
+<
 <h1 class="admintitle"><digi:trn key="aim:AuditLoggerManager">Audit Logger Manager</digi:trn></h1> 
 <digi:instance property="aimAuditLoggerManagerForm" />
 <!--  AMP Admin Logo -->

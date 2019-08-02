@@ -20,14 +20,9 @@ function showUser(email){
 	}
 }
 
-function compare(activityOneId) {
-    document.getElementById("compPrevForm").target = "_self";
-    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
-    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
-    document.aimCompareActivityVersionsForm.submit();
-}
 
 </script>
+<script language="javascript" src="/repository/aim/view/scripts/viewComparesionDifferences.js"></script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
 <c:set target="${bcparams}" property="tId" value="-1"/>
 <c:set target="${bcparams}" property="dest" value="teamLead"/>
@@ -294,7 +289,8 @@ function compare(activityOneId) {
 										</td>
 										<td width="100" class="inside">
 										 <input type="button" title="<digi:trn>Click here to view full list of activities compared to its previous versions</digi:trn>"
-										   onclick="javascript:compare(${log.objectId})" class="dr-menu"
+										   onclick="javascript:viewDifferences(${log.objectId})" class="dr-menu"
+										   
 										   value="&nbsp;&nbsp;<digi:trn>Compare</digi:trn>&nbsp;&nbsp;"
 										   style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
 								
