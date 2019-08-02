@@ -23,6 +23,7 @@ function showUser(email){
 
 </script>
 <script language="javascript" src="/repository/aim/view/scripts/viewComparesionDifferences.js"></script>
+
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
 <c:set target="${bcparams}" property="tId" value="-1"/>
 <c:set target="${bcparams}" property="dest" value="teamLead"/>

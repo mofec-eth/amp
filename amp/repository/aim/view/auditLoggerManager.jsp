@@ -63,7 +63,9 @@
 
 
 </style>
+
 <script language="javascript" src="/repository/aim/view/scripts/viewComparesionDifferences.js"></script>
+<script language="javascript" >
 function actionChanged(value){
 	var header = document.getElementById("frecuencyHeaderId");
 	if (header!= null){
