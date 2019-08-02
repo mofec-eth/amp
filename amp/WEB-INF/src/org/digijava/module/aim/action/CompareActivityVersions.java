@@ -14,6 +14,8 @@ import java.util.Set;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
@@ -365,11 +367,16 @@ public class CompareActivityVersions extends DispatchAction {
                                     HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+        HttpSession session = request.getSession();
+        TeamMember tm = (TeamMember) session.getAttribute("currentMember");
+        String workspace = tm.getTeamName();
         vForm.populateEffectiveFilters();
+        if(!workspace.equals("AMP Administrator")) {
+            vForm.setEffectiveSelectedTeam(workspace);     
+        }        
         vForm.setActivityComparisonResultList(ActivityVersionUtil.
                 getOutputCollectionGrouped(vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(),
                         vForm.getEffectiveDateFrom(), vForm.getEffectiveDateTo()));
-
         return mapping.findForward("forward");
     }
     public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
