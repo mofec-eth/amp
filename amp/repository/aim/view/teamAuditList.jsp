@@ -20,7 +20,6 @@ function showUser(email){
 	}
 }
 
-
 </script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
 <c:set target="${bcparams}" property="tId" value="-1"/>
@@ -215,8 +214,11 @@ function showUser(email){
 											</c:if>
 										</b>
 									</td>
-								</tr>
-								
+										<td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif"
+											class="inside"><b class="ins_title"> <digi:trn
+													key="aim:action"> View differences</digi:trn>
+										</b></td>
+									</tr>					
 								
 								<logic:iterate name="aimTeamAuditListForm" property="logs" id="log" type="org.digijava.module.aim.dbentity.AmpAuditLogger">
 									<tr>
@@ -276,6 +278,11 @@ function showUser(email){
 												<digi:trn key="admin:update">Update</digi:trn>
 											</logic:equal>								  
 										</td>
+										<td width="50" class="inside">
+                                        <div style="text-align:center">
+                                        <input type="button" value="<digi:trn>Compare</digi:trn>" onclick="javascript:viewDifferences(${log.objectId})" class="dr-menu">
+                                        </div>
+                                        </td>
 									</tr>
 								</logic:iterate>
 							</table>
@@ -374,3 +381,9 @@ function showUser(email){
 </table>
 
 </digi:form>
+<digi:form action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm">
+<input type="hidden" name="activityOneId" id="activityOneId">
+<input type="hidden" name="method" id="method">
+</digi:form>
+
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>

@@ -204,12 +204,6 @@ function resetSearch() {
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
-function viewDifferences(activityOneId) {
-    document.getElementById("compPrevForm").target = "_self";
-    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
-    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
-    document.aimCompareActivityVersionsForm.submit();
-}
 
 function compareAll(){
     document.getElementById("compPrevForm").target = "_blank";
@@ -743,3 +737,5 @@ function compareAll(){
 	<input type="hidden" name="selectedDateFrom" id="selectedDateFrom" />
 	<input type="hidden" name="selectedDateTo" id="selectedDateTo" />
 </digi:form>
+
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>
