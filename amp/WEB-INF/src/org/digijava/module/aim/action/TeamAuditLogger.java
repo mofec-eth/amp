@@ -16,8 +16,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.dgfoundation.amp.utils.MultiAction;
 import org.digijava.module.aim.dbentity.AmpAuditLogger;
+import org.digijava.module.aim.form.CompareActivityVersionsForm;
 import org.digijava.module.aim.form.TeamAuditForm;
 import org.digijava.module.aim.helper.TeamMember;
+import org.digijava.module.aim.util.ActivityVersionUtil;
 import org.digijava.module.aim.util.AuditLoggerUtil;
 
 public class TeamAuditLogger extends MultiAction {
@@ -174,5 +176,15 @@ public class TeamAuditLogger extends MultiAction {
             }
         return mapping.findForward("forward");
     }
-    
-}
+  
+
+public ActionForward compareAll(ActionMapping mapping, ActionForm form, HttpServletRequest request,HttpServletResponse response) throws Exception {
+
+CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
+
+vForm.setActivityComparisonResultList(ActivityVersionUtil.
+getOutputCollectionGrouped(vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(),
+vForm.getEffectiveDateFrom(), vForm.getEffectiveDateTo()));
+
+return mapping.findForward("forward");
+}}

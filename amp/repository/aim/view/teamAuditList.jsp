@@ -20,6 +20,11 @@ function showUser(email){
 	}
 }
 
+function compareAll(){
+    document.getElementById("compPrevForm").target = "_blank";
+    document.aimCompareActivityVersionsForm.method.value = "compareAll";
+    document.aimCompareActivityVersionsForm.submit();
+}
 
 </script>
 <script language="javascript" src="/repository/aim/view/scripts/viewComparesionDifferences.js"></script>
@@ -296,8 +301,18 @@ function showUser(email){
 										   style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
 								
 										</td>
+										
+								
 									</tr>
 								</logic:iterate>
+								<tr>
+								
+										 <input type="button" title="<digi:trn>Click here to view full list of activities compared to its previous versions</digi:trn>"
+										   onclick="javascript:compareAll()" class="dr-menu"
+										 value="&nbsp;&nbsp;<digi:trn>Compare All</digi:trn>&nbsp;&nbsp;"
+										   style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
+										  
+										</tr>
 							</table>
 							
 							<!-- Pagination -->
