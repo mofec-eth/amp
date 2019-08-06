@@ -364,19 +364,21 @@ public class CompareActivityVersions extends DispatchAction {
     }
 
     public ActionForward compareAll(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+            HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
         HttpSession session = request.getSession();
         TeamMember tm = (TeamMember) session.getAttribute("currentMember");
-        String workspace = tm.getTeamName();
-        vForm.populateEffectiveFilters();
-        if(!workspace.equals("AMP Administrator")) {
-            vForm.setEffectiveSelectedTeam(workspace);     
-        }        
-        vForm.setActivityComparisonResultList(ActivityVersionUtil.
-                getOutputCollectionGrouped(vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(),
-                        vForm.getEffectiveDateFrom(), vForm.getEffectiveDateTo()));
+        boolean isPermitted = AuditLoggerUtil.checkPermission(request);
+        if (isPermitted) {
+            vForm.populateEffectiveFilters();
+            if (tm.getTeamHead()) {
+                vForm.setEffectiveSelectedTeam(tm.getTeamName());
+            }
+            vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(
+                    vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(), vForm.getEffectiveDateFrom(),
+                    vForm.getEffectiveDateTo()));
+        }
         return mapping.findForward("forward");
     }
     public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,

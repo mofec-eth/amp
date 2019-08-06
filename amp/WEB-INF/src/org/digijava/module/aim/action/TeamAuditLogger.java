@@ -30,21 +30,8 @@ public class TeamAuditLogger extends MultiAction {
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         
-        boolean permitted = false;
         HttpSession session = request.getSession();
-        if (session.getAttribute("ampAdmin") != null) {
-            String key = (String) session.getAttribute("ampAdmin");
-            if (key.equalsIgnoreCase("yes")) {
-                permitted = true;
-            } else {
-                if (session.getAttribute("teamLeadFlag") != null) {
-                    key = (String) session.getAttribute("teamLeadFlag");
-                    if (key.equalsIgnoreCase("true")) {
-                        permitted = true;
-                    }
-                }
-            }
-        }
+        boolean permitted = AuditLoggerUtil.checkPermission(request); 
         if (!permitted) {
             return mapping.findForward("index");
         }
