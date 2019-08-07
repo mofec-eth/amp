@@ -14,6 +14,8 @@ import java.util.Set;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts.action.ActionErrors;
@@ -362,14 +364,21 @@ public class CompareActivityVersions extends DispatchAction {
     }
 
     public ActionForward compareAll(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+            HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
-        vForm.populateEffectiveFilters();
-        vForm.setActivityComparisonResultList(ActivityVersionUtil.
-                getOutputCollectionGrouped(vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(),
-                        vForm.getEffectiveDateFrom(), vForm.getEffectiveDateTo()));
-
+        HttpSession session = request.getSession();
+        TeamMember tm = (TeamMember) session.getAttribute("currentMember");
+        boolean isPermitted = AuditLoggerUtil.checkPermission(request);
+        if (isPermitted) {
+            vForm.populateEffectiveFilters();
+            if (tm.getTeamHead()) {
+                vForm.setEffectiveSelectedTeam(tm.getTeamName());
+            }
+            vForm.setActivityComparisonResultList(ActivityVersionUtil.getOutputCollectionGrouped(
+                    vForm.getEffectiveSelectedUser(), vForm.getEffectiveSelectedTeam(), vForm.getEffectiveDateFrom(),
+                    vForm.getEffectiveDateTo()));
+        }
         return mapping.findForward("forward");
     }
     public ActionForward pdfExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,

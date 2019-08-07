@@ -19,6 +19,11 @@ function showUser(email){
 		alert (trasnlation);
 	}
 }
+function compareAll(){
+	document.getElementById("compForm").target = "_blank";
+	document.aimCompareActivityVersionsForm.method.value = "compareAll"
+	document.aimCompareActivityVersionsForm.submit();	
+	}
 
 </script>
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
@@ -66,9 +71,12 @@ function showUser(email){
 												<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">	
 										
 									<jsp:include page="teamSetupMenu.jsp"  />
-										
 
-							<table class="inside" width="970" cellpadding="0" cellspacing="0">
+								<input type="button" value="Compare All"
+									onclick="javascript:compareAll()" class="dr-menu"
+									style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
+
+								<table class="inside" width="970" cellpadding="0" cellspacing="0">
 								<tr>
 							    <td background="/TEMPLATE/ampTemplate/img_2/ins_bg.gif" class="inside">
 							    	<b class="ins_title">
@@ -381,7 +389,7 @@ function showUser(email){
 </table>
 
 </digi:form>
-<digi:form action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm">
+<digi:form styleId="compForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm">
 <input type="hidden" name="activityOneId" id="activityOneId">
 <input type="hidden" name="method" id="method">
 </digi:form>
