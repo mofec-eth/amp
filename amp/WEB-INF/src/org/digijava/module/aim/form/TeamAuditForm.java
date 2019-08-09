@@ -2,10 +2,12 @@ package org.digijava.module.aim.form;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.struts.action.ActionForm;
+import org.digijava.kernel.user.User;
 
-public class TeamAuditForm extends ActionForm implements Serializable{
+public class TeamAuditForm extends FilterAuditLoggerForm implements Serializable{
 
     /**
      * 
@@ -21,7 +23,25 @@ public class TeamAuditForm extends ActionForm implements Serializable{
     private int offset;
     private String useraction;
     private String frecuency;
+    private Collection<User> userList;
+    private String teamName;
     
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamname) {
+        this.teamName = teamname;
+    }
+
+    public Collection<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(Collection<User> userList) {
+        this.userList = userList;
+    }
+
     public String getUseraction() {
         return useraction;
     }
