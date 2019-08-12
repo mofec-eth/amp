@@ -71,9 +71,14 @@
 					</a>
 				<a target="_blank" onclick="generateExport('xlsExport'); return false;" title="Export to Excel" style="cursor: pointer;">
                 <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
-                </a>					
+                </a>	
+                <digi:link styleId="printWin" href="#" onclick="window.print(); return false;" title="${translationPrinter }">
+				<digi:img hspace="" vspace=""	src="/TEMPLATE/ampTemplate/imagesSource/common/ico_print.gif" border="0" alt="Printer Friendly" />
+			</digi:link>				
 				</li>
 			</ul>
+			
+			
 		</div>
 		<div style="border: 1px solid rgb(208, 208, 208); padding: 10px;font-size:12px; height: 100%;" class="contentstyle" id="ajaxcontentarea">
 			<table border="0" cellpadding="2" cellspacing="0" bgcolor="#FFFFFF" id="dataTable" width="100%">

@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.apache.struts.action.ActionForm;
+import org.digijava.kernel.user.User;
 
-public class TeamAuditForm extends ActionForm implements Serializable{
+public class TeamAuditForm extends FilterAuditLoggerForm  implements Serializable{
 
     /**
      * 
@@ -21,7 +22,36 @@ public class TeamAuditForm extends ActionForm implements Serializable{
     private int offset;
     private String useraction;
     private String frecuency;
+    private boolean withLogin;
+    private Collection<User> userList;
+    private String teamName;
     
+        
+    public boolean isWithLogin() {
+        return withLogin;
+    }
+
+    public void setWithLogin(boolean withLogin) {
+        this.withLogin = withLogin;
+    }
+    
+    
+    public Collection<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(Collection<User> userList) {
+        this.userList = userList;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
     public String getUseraction() {
         return useraction;
     }
