@@ -9,6 +9,7 @@
 
 <%@page import="org.digijava.module.aim.services.auditcleaner.AuditCleaner"%>
 <jsp:include page="/repository/aim/view/scripts/auditFilter.jsp"  />
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>
 <script language="javascript">
 
 function actionChanged(value){

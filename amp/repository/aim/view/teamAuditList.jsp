@@ -8,6 +8,7 @@
 <%@ taglib uri="/taglib/jstl-functions" prefix="fn" %>
 
 <jsp:include page="/repository/aim/view/scripts/auditFilter.jsp"  />
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>
 <script language="javascript">
 function showUser(email){
 	if (email != ""){
@@ -89,7 +90,7 @@ function submitFilter() {
 						<digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn>
 					</c:set>
 					  <c:if test="${(not empty aimTeamAuditListForm.selectedUser and aimTeamAuditListForm.selectedUser !=-1 )
-					  or (not empty aimTeamAuditListForm.selectedTeam and aimTeamAuditListForm.selectedTeam != '-1' )
+					   or (not empty aimTeamAuditListForm.selectedTeam )
 					  or (not empty aimTeamAuditListForm.selectedDateFrom ) or (not empty aimTeamAuditListForm.selectedDateTo )}">
 						  <c:set var="hiddenStyle" value="display:inline-flex;"/>
 						  <c:set var="settingsTitle">
