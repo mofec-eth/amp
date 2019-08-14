@@ -25,7 +25,91 @@ function compareAll(){
 	document.aimCompareActivityVersionsForm.submit();	
 	}
 
+function toggleFilterSettings(){
+	var currentFilterSettings = $('#currentFilterSettings');
+	var displayFilterButton = $('#displayFilterButton');
+	if(currentFilterSettings.css('display') == "inline-flex"){
+		currentFilterSettings.hide();
+		$('#exportScorecard').hide();
+		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Showfilteroptions">Show Filter options</digi:trn>'+ ' &gt;&gt;');
+	}
+	else
+	{
+		currentFilterSettings.css('display', 'inline-flex');
+		$('#exportScorecard').css('display','inline-flex');
+		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Hidefilteroptions">Hide Filter options</digi:trn>'+ ' &lt;&lt;');	
+	}
+}
+function submitFilter() {
+	document.aimTeamAuditListForm.submit();
+}
+function resetSearch() {
+	document.getElementById("userId").selectedIndex = 0;
+	document.getElementById("teamId").selectedIndex = 0;
+	document.getElementById("selectedDateFromText").value="";
+	document.getElementById("selectedDateToText").value="";
+    document.aimAuditLoggerManagerForm.action = "/aim/teamAuditList.do?action=reset";
+    document.aimTeamAuditListForm.submit();
+}
+
+
 </script>
+
+<jsp:include page="/repository/aim/view/scripts/newCalendar.jsp"  />
+<style>
+.contentbox_border{
+	border:1px solid #666666;
+	width:100%;	
+	background-color: #f4f4f2;
+	padding: 20 0 20 0;
+}
+</style>
+<style>
+.link{
+	text-decoration: none;
+	font-size: 8pt; font-family: Tahoma;
+}
+</style>
+
+<style>
+
+.tableEven {
+	background-color:#dbe5f1;
+	font-size:8pt;
+	padding:2px;
+}
+
+.tableOdd {
+	background-color:#FFFFFF;
+	font-size:8pt;!important
+	padding:2px;
+}
+ 
+.Hovered {
+	background-color:#a5bcf2;
+}
+.divTable{
+	display: table;
+	width: 100%;
+}
+.divTableRow {
+	display: table-row;
+}
+.divTableCellLeft{
+	text-align: right;
+	font-weight: bold;
+}
+.divTableCell {
+	display: table-cell;
+	padding: 3px 10px;
+	width: 50%;
+}
+.divTableBody {
+	display: table-row-group;
+}
+
+
+</style>		 
 <jsp:useBean id="bcparams" type="java.util.Map" class="java.util.HashMap"/>
 <c:set target="${bcparams}" property="tId" value="-1"/>
 <c:set target="${bcparams}" property="dest" value="teamLead"/>
@@ -75,6 +159,7 @@ function compareAll(){
 								<input type="button" value="Compare All"
 									onclick="javascript:compareAll()" class="dr-menu"
 									style="cursor: pointer; font-style: italic; float: right; margin: 0.5% 1.5% 0.5%;">
+					
 
 								<table class="inside" width="970" cellpadding="0" cellspacing="0">
 								<tr>
@@ -293,6 +378,72 @@ function compareAll(){
                                         </td>
 									</tr>
 								</logic:iterate>
+								<span style="cursor:pointer;font-style: italic;float:right;" onClick="toggleFilterSettings();" id="displayFilterButton">
+					<c:set var="hiddenStyle" value="display:none;"/>
+					<c:set var="settingsTitle">
+						<digi:trn key="aim:Showfilteroptions">Show Filter options</digi:trn>
+					</c:set>
+					  <c:if test="${(not empty aimAuditLoggerManagerForm.selectedUser and aimAuditLoggerManagerForm.selectedUser !=-1 )
+					  or (not empty aimAuditLoggerManagerForm.selectedTeam and aimAuditLoggerManagerForm.selectedTeam != '-1' )
+					  or (not empty aimAuditLoggerManagerForm.selectedDateFrom ) or (not empty aimAuditLoggerManagerForm.selectedDateTo )}">
+						  <c:set var="hiddenStyle" value="display:inline-flex;"/>
+						  <c:set var="settingsTitle">
+							  <digi:trn key="aim:Showfilteroptions">Hide Filter options</digi:trn>
+						  </c:set>
+					  </c:if>
+
+				  <c:out value="${settingsTitle}"/> </span>
+                                &nbsp;<br>
+								<div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
+									<div class="divTable">
+										<div class="divTableBody">
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><digi:trn>User:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedUser" styleClass="inp-text" styleId="userId">
+													<html:option value="-1"><digi:trn>Select User</digi:trn> </html:option>
+													<html:optionsCollection property="userList" value="id" label="name"></html:optionsCollection>
+												</html:select></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><digi:trn>Team:</digi:trn></div>
+												<div class="divTableCell"><html:select property="selectedTeam" styleClass="inp-text" styleId="teamId">
+													<html:option value="-1"><digi:trn>Select Team </digi:trn></html:option>
+													<html:options property="teamList"></html:options>
+												</html:select></div>
+											</div>
+											<c:set var="dateTr">
+												<digi:trn>Date</digi:trn>
+											</c:set>
+											<div class="divTableRow" >
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>From</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateFrom"><html:text property="selectedDateFrom" styleClass="inp-text" readonly="true" styleId="selectedDateFromText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateFrom","selectedDateFromText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateFromText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>To</digi:trn>:</div>
+												<div class="divTableCell" id="selectedDateTo">                                 	<html:text property="selectedDateTo" styleClass="inp-text" readonly="true" styleId="selectedDateToText"/>
+													<a id="date2" href='javascript:pickDateById2("selectedDateTo","selectedDateToText",true,"tl")'>
+														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
+													</a>
+													<a id="clear2" href='javascript:clearDate("selectedDateToText")'>
+														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
+													</a></div>
+											</div>
+											<div class="divTableRow">
+												<div class="divTableCell divTableCellLeft"><input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>"></div>
+												<div class="divTableCell"><input class="dr-menu" type="button" value="<digi:trn>Reset</digi:trn>" onclick="document.aimTeamAuditListForm.reset();resetSearch()"></div>
+											</div>
+										</div>
+									</div>
+                                 </div>
+									</div>                        
+                            	</div>
+                          		<br>
 							</table>
 							
 							<!-- Pagination -->
@@ -382,10 +533,14 @@ function compareAll(){
 						</div>											
 					</td>
 				</tr>
+				<tr>
+				  
 			</table>	
 								
 		</td>
 	</tr>
+	
+	
 </table>
 
 </digi:form>

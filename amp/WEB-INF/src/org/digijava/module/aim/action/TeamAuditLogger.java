@@ -19,6 +19,7 @@ import org.digijava.module.aim.dbentity.AmpAuditLogger;
 import org.digijava.module.aim.form.TeamAuditForm;
 import org.digijava.module.aim.helper.TeamMember;
 import org.digijava.module.aim.util.AuditLoggerUtil;
+import org.digijava.module.um.util.AmpUserUtil;
 
 public class TeamAuditLogger extends MultiAction {
     
@@ -40,11 +41,12 @@ public class TeamAuditLogger extends MultiAction {
             TeamMember tm = (TeamMember) session.getAttribute("currentMember");
             teamname = tm.getTeamName();
         }
+        TeamAuditForm vForm = (TeamAuditForm) form;               
+        vForm.setUserList(AmpUserUtil.getAllUsers(false));
+        vForm.setTeamName(teamname);
+        vForm.populateEffectiveFilters();    
         
-        TeamAuditForm vForm = (TeamAuditForm) form;
-        
-        Collection<AmpAuditLogger> logs=AuditLoggerUtil.getTeamLogObjects(teamname);
-        
+        Collection<AmpAuditLogger> logs = AuditLoggerUtil.getLogObjects(vForm.isWithLogin(),vForm.getEffectiveSelectedUser(), teamname, vForm.getEffectiveDateFrom(),vForm.getEffectiveDateTo());
         if (request.getParameter("sortBy")!=null){
             vForm.setSortBy(request.getParameter("sortBy"));
         }
