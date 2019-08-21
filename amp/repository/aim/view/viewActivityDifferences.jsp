@@ -16,6 +16,10 @@
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/yui_datatable.css">
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/desktop_yui_tabs.css">
 
+<link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/activityDifference.css"> 
+
+
+
 <style type="text/css">
 .tableEven {
 	background-color: #dbe5f1;
@@ -65,6 +69,7 @@
 					<c:if test="${aimCompareActivityVersionsForm.method != 'compareAll'}">
 						<a><div><digi:trn>Compare Activities</digi:trn></div></a>
 					</c:if>
+					
 					<a target="_blank" onclick="generateExport('pdfExport'); return false;" title="Export to PDF"
 					   style="cursor: pointer;">
 						<img src="/TEMPLATE/ampTemplate/images/icons/pdf.gif" border="0" hspace="2" vspace="2" alt="Export to PDF">
@@ -72,6 +77,10 @@
 				<a target="_blank" onclick="generateExport('xlsExport'); return false;" title="Export to Excel" style="cursor: pointer;">
                 <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
                 </a>					
+               			
+							  	<digi:link styleId="printWin" href="#" onclick="window.print(); return false;" title="${translationPrinter }">
+				<digi:img hspace="2" vspace="2"	src="/TEMPLATE/ampTemplate/imagesSource/common/ico_print.gif" border="0" alt="Printer Friendly" />
+			</digi:link>	
 				</li>
 			</ul>
 		</div>

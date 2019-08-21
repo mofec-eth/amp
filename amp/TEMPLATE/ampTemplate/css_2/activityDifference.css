@@ -1,0 +1,34 @@
+#amp-header {
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    visibility: hidden;
+    
+}
+
+#amp-footer
+{
+	visibility:hidden;
+}
+
+
+
+.selected {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    visibility: hidden;
+    
+}
+
+
+.content
+{
+	visibility:hidden;
+}
+
+#backButton
+{
+	visibility:hidden;
+}
+#exportButton
+{
+	visibility:hidden;
+}
