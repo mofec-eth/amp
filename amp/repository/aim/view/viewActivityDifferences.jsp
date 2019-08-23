@@ -15,6 +15,7 @@
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/yui_tabs.css">
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/yui_datatable.css">
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/desktop_yui_tabs.css">
+<link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/CompareVersion.css">
 
 <style type="text/css">
 .tableEven {
@@ -71,7 +72,12 @@
 					</a>
 				<a target="_blank" onclick="generateExport('xlsExport'); return false;" title="Export to Excel" style="cursor: pointer;">
                 <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
-                </a>					
+                </a>
+                <a target="_blank" onclick="window.print();" style="cursor: pointer; color:##05ffb0;" title="Print friendly ">
+							<img id="Print friendly" hspace="2" src="img_2/ico_print.gif" width="20" height="25">
+							Print friendly
+						</a>	
+                					
 				</li>
 			</ul>
 		</div>
