@@ -703,4 +703,23 @@ public final class AuditLoggerUtil {
             return result;
         }
     }
+
+    public static boolean checkPermission(HttpServletRequest request) {
+        boolean permitted = false;
+        HttpSession session = request.getSession();
+        if (session.getAttribute("ampAdmin") != null) {
+            String key = (String) session.getAttribute("ampAdmin");
+            if (key.equalsIgnoreCase("yes")) {
+                permitted = true;
+            } else {
+                if (session.getAttribute("teamLeadFlag") != null) {
+                    key = (String) session.getAttribute("teamLeadFlag");
+                    if (key.equalsIgnoreCase("true")) {
+                        permitted = true;
+                    }
+                }
+            }
+        }
+        return permitted;
+    }
 } 

@@ -8,61 +8,8 @@
 <%@ taglib uri="/taglib/jstl-functions" prefix="fn" %>
 
 <%@page import="org.digijava.module.aim.services.auditcleaner.AuditCleaner"%>
-<jsp:include page="/repository/aim/view/scripts/newCalendar.jsp"  />
-<style>
-.contentbox_border{
-	border:1px solid #666666;
-	width:100%;	
-	background-color: #f4f4f2;
-	padding: 20 0 20 0;
-}
-</style>
-<style>
-.link{
-	text-decoration: none;
-	font-size: 8pt; font-family: Tahoma;
-}
-</style>
-
-<style>
-
-.tableEven {
-	background-color:#dbe5f1;
-	font-size:8pt;
-	padding:2px;
-}
-
-.tableOdd {
-	background-color:#FFFFFF;
-	font-size:8pt;!important
-	padding:2px;
-}
- 
-.Hovered {
-	background-color:#a5bcf2;
-}
-.divTable{
-	display: table;
-	width: 100%;
-}
-.divTableRow {
-	display: table-row;
-}
-.divTableCellLeft{
-	text-align: right;
-	font-weight: bold;
-}
-.divTableCell {
-	display: table-cell;
-	padding: 3px 10px;
-	width: 50%;
-}
-.divTableBody {
-	display: table-row-group;
-}
-
-
-</style>
+<jsp:include page="/repository/aim/view/scripts/auditFilter.jsp"  />
+<script language="JavaScript" type="text/javascript" src="<digi:file src="module/aim/scripts/compareAcivity.js"/>"></script>
 <script language="javascript">
 
 function actionChanged(value){
@@ -176,22 +123,6 @@ function toggleSettings(){
 	}
 }
 
-function toggleFilterSettings(){
-	var currentFilterSettings = $('#currentFilterSettings');
-	var displayFilterButton = $('#displayFilterButton');
-	if(currentFilterSettings.css('display') == "inline-flex"){
-		currentFilterSettings.hide();
-		$('#exportScorecard').hide();
-		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Showfilteroptions">Show Filter options</digi:trn>'+ ' &gt;&gt;');
-	}
-	else
-	{
-		currentFilterSettings.css('display', 'inline-flex');
-		$('#exportScorecard').css('display','inline-flex');
-		displayFilterButton.html('<digi:trn jsFriendly="true" key="aim:Hidefilteroptions">Hide Filter options</digi:trn>'+ ' &lt;&lt;');	
-	}
-}
-
 function resetSearch() {
 	document.getElementById("userId").selectedIndex = 0;
 	document.getElementById("teamId").selectedIndex = 0;
@@ -203,24 +134,6 @@ function resetSearch() {
 
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
-}
-function viewDifferences(activityOneId) {
-    document.getElementById("compPrevForm").target = "_self";
-    document.aimCompareActivityVersionsForm.method.value = "viewDifferences";
-    document.aimCompareActivityVersionsForm.activityOneId.value = activityOneId;
-    document.aimCompareActivityVersionsForm.submit();
-}
-
-function compareAll(){
-    document.getElementById("compPrevForm").target = "_blank";
-    var user = document.getElementById("userId").value;
-    var team = document.getElementById("teamId").value;
-    document.aimCompareActivityVersionsForm.selectedUser.value = user;
-    document.aimCompareActivityVersionsForm.selectedTeam.value = team;
-    document.aimCompareActivityVersionsForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
-    document.aimCompareActivityVersionsForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
-    document.aimCompareActivityVersionsForm.method.value = "compareAll";
-    document.aimCompareActivityVersionsForm.submit();
 }
 </script>
 
@@ -349,7 +262,7 @@ function compareAll(){
 
 				  <c:out value="${settingsTitle}"/> </span>
                                 &nbsp;<br>
-								<div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
+<div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
 									<div class="divTable">
 										<div class="divTableBody">
 											<div class="divTableRow">
@@ -396,6 +309,8 @@ function compareAll(){
 										</div>
 									</div>
                                  </div>
+									</div>                        
+                            	</div>
 									</div>                        
                             	</div>
                           		<br>
@@ -735,11 +650,4 @@ function compareAll(){
 	setHoveredTable("dataTable", false);
 </script>
 </digi:form>
-<digi:form styleId="compPrevForm" action="/compareActivityVersions.do" method="post" type="aimCompareActivityVersionsForm" target="_self">
-	<input type="hidden" name="activityOneId" id="activityOneId" />
-	<input type="hidden" name="method" id="method" />
-	<input type="hidden" name="selectedUser" id="selectedUser" />
-	<input type="hidden" name="selectedTeam" id="selectedTeam" />
-	<input type="hidden" name="selectedDateFrom" id="selectedDateFrom" />
-	<input type="hidden" name="selectedDateTo" id="selectedDateTo" />
-</digi:form>
+
