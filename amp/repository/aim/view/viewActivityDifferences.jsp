@@ -15,6 +15,7 @@
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/yui_tabs.css">
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/yui_datatable.css">
 <link type="text/css" rel="stylesheet" href="/TEMPLATE/ampTemplate/css_2/desktop_yui_tabs.css">
+<link type="text/css" rel="stylesheet" media="print" href="/TEMPLATE/ampTemplate/css_2/comparePrint.css" />
 
 <style type="text/css">
 .tableEven {
@@ -37,7 +38,6 @@
 	background-color: #FFFFFF;
 }
 </style>
-
 
 <digi:instance property="aimCompareActivityVersionsForm" />
 <digi:errors/>
@@ -71,7 +71,11 @@
 					</a>
 				<a target="_blank" onclick="generateExport('xlsExport'); return false;" title="Export to Excel" style="cursor: pointer;">
                 <img src="/TEMPLATE/ampTemplate/imagesSource/common/ico_exc.gif" border="0" hspace="2" vspace="2" alt="Export to Excel"> 
-                </a>					
+                </a>
+                <a target="_blank" onclick="window.print();" style="cursor: pointer; color:#376091;" title="Print">
+							<img id="Print" hspace="2" src="img_2/ico_print.gif" width="15" height="18">
+							Print
+						</a>			
 				</li>
 			</ul>
 		</div>
