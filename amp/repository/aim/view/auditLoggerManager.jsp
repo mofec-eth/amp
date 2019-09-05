@@ -135,6 +135,15 @@ function resetSearch() {
 function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
+
+function filtersort(filterBy) {
+    document.aimAuditLoggerManagerForm.selectedUser.value = document.getElementById("userId").value;
+    document.aimAuditLoggerManagerForm.selectedTeam.value = document.getElementById("teamId").value;
+    document.aimAuditLoggerManagerForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
+    document.aimAuditLoggerManagerForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
+    document.aimAuditLoggerManagerForm.action = "/auditLoggerManager.do?sortBy="+filterBy;
+    document.aimAuditLoggerManagerForm.submit();	
+}
 </script>
 
 <h1 class="admintitle"><digi:trn key="aim:AuditLoggerManager">Audit Logger Manager</digi:trn></h1> 
@@ -325,25 +334,25 @@ function exportScorecard () {
 								<td width="280" height="22" align="center" valign="center"bgcolor="#C7D4DB" >
 								<c:if 
 									test="${aimAuditLoggerManagerForm.sortBy!='nameasc'}">
-									<digi:link style="color:#376091;font-size:14px;" href="/auditLoggerManager.do?sortBy=nameasc">
+									<digi:link style="color:#376091;font-size:14px;" href="#" onclick="javascript:filtersort('nameasc');return false;">
 										<b><digi:trn key="aim:name">Name</digi:trn></b>									
 									</digi:link>
 								</c:if> 
 								<c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='nameasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=namedesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('namedesc');return false;">
 										<b><digi:trn key="aim:name">Name</digi:trn></b>									
 									</digi:link>
 							   </c:if>
 							   </td>
 								<td valign="center" align="center"bgcolor="#C7D4DB" style="color: black" width="150">
 								<c:if test="${aimAuditLoggerManagerForm.sortBy!='typeasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=typeasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('typeasc');return false;">
 										<b><digi:trn key="aim:objectType">Object Type</digi:trn></b>									
 									</digi:link>
 								</c:if>
 								<c:if test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='typeasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=typedesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('typedesc');return false;">
 										<b><digi:trn key="aim:objectType">Object Type</digi:trn></b>									
 									</digi:link>
 								</c:if>
@@ -351,83 +360,83 @@ function exportScorecard () {
 								<td valign="center" align="center"bgcolor="#C7D4DB"
 									style="color: black"><c:if
 									test="${aimAuditLoggerManagerForm.sortBy!='teamasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=teamasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('teamasc');return false;">
 										<b><digi:trn key="aim:teamName">Team Name</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='teamasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=teamdesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('teamdesc');return false;">
 										<b><digi:trn key="aim:teamName">Team Name</digi:trn></b>									
 									</digi:link>
 								</c:if></td>
 								<td align="center" valign="center"bgcolor="#C7D4DB"
 									style="color: black"><c:if
 									test="${aimAuditLoggerManagerForm.sortBy!='authorasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=authorasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('authorasc');return false;">
 										<b><digi:trn key="aim:authorName">Author Name</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='authorasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=authordesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('authordesc');return false;">
 										<b><digi:trn key="aim:authorName">Author Name</digi:trn></b>									
 									</digi:link>
 								</c:if></td>
 								<td width="100" align="center" valign="center"bgcolor="#C7D4DB"
 									style="color: black"><c:if
 									test="${aimAuditLoggerManagerForm.sortBy!='creationdateasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=creationdateasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('creationdateasc');return false;">
 										<b><digi:trn key="aim:creationDateLogger">Creation Date</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='creationdateasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=creationdatedesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('creationdatedesc');return false;">
 										<b><digi:trn key="aim:creationDateLogger">Creation Date</digi:trn></b>									
 									</digi:link>
 							  </c:if></td>
 								<td width="208" align="center" valign="center"bgcolor="#C7D4DB"
 									style="color: black"><c:if
 									test="${aimAuditLoggerManagerForm.sortBy!='editorasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=editorasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('editorasc');return false;">
 										<b><digi:trn key="aim:editorName">Editor Name</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='editorasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=editordesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('editordesc');return false;">
 										<b><digi:trn key="aim:editorName">Editor Name</digi:trn></b>									
 									</digi:link>
 								</c:if></td>
 								<td align="center" valign="center"bgcolor="#C7D4DB"
 									style="color: black"><c:if
 									test="${aimAuditLoggerManagerForm.sortBy!='changedateasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=changedateasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('changedateasc');return false;">
 										<b><digi:trn key="aim:changeDate">Change Date</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='changedateasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=changedatedesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('changedatedesc');return false;">
 										<b><digi:trn key="aim:changeDate">Change Date</digi:trn></b>									
 									</digi:link>
 								</c:if></td>
 								<td width="129" align="center" valign="center"bgcolor="#C7D4DB"style="color: black">
 								<c:if test="${aimAuditLoggerManagerForm.sortBy!='actionasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=actionasc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('actionasc');return false;">
 										<b><digi:trn key="aim:action">Action</digi:trn></b>									
 									</digi:link>
 								</c:if> <c:if
 									test="${not empty aimAuditLoggerManagerForm.sortBy && aimAuditLoggerManagerForm.sortBy=='actionasc'}">
-									<digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=actiondesc">
+									<digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('actiondesc');return false;">
 										<b><digi:trn key="aim:action">Action</digi:trn></b>									
 									</digi:link>
 								</c:if></td>
                                                                 <td  align="center" valign="center"bgcolor="#C7D4DB"style="color: black;" nowrap>
                                                                 <c:choose>
                                                                     <c:when test="${aimAuditLoggerManagerForm.sortBy!='detailasc'}">
-                                                                        <digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=detailasc">
+                                                                        <digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('detailasc');return false;">
                                                                             <b><digi:trn>Additional Details</digi:trn></b>
                                                                         </digi:link>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <digi:link style="color:#376091;" href="/auditLoggerManager.do?sortBy=detaildesc">
+                                                                        <digi:link style="color:#376091;" href="#" onclick="javascript:filtersort('detaildesc');return false;">
                                                                             <b><digi:trn>Additional Details</digi:trn></b>
                                                                         </digi:link>
                                                                     </c:otherwise>
