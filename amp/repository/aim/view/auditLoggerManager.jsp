@@ -136,14 +136,6 @@ function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
 
-function filtersort(filterBy) {
-    document.aimAuditLoggerManagerForm.selectedUser.value = document.getElementById("userId").value;
-    document.aimAuditLoggerManagerForm.selectedTeam.value = document.getElementById("teamId").value;
-    document.aimAuditLoggerManagerForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
-    document.aimAuditLoggerManagerForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
-    document.aimAuditLoggerManagerForm.action = "/auditLoggerManager.do?sortBy="+filterBy;
-    document.aimAuditLoggerManagerForm.submit();	
-}
 </script>
 
 <h1 class="admintitle"><digi:trn key="aim:AuditLoggerManager">Audit Logger Manager</digi:trn></h1> 
@@ -272,7 +264,7 @@ function filtersort(filterBy) {
 				  <c:out value="${settingsTitle}"/> </span>
                                 &nbsp;<br>
 <div style="<c:out value ="${hiddenStyle}"/>background-color:#ffffff;padding:2px; width: 100%" id="currentFilterSettings" >
-									<div class="divTable">
+									<div class="divTable" >
 										<div class="divTableBody">
 											<div class="divTableRow">
 												<div class="divTableCell divTableCellLeft" ><digi:trn>User:</digi:trn></div>
@@ -291,25 +283,37 @@ function filtersort(filterBy) {
 											<c:set var="dateTr">
 												<digi:trn>Date</digi:trn>
 											</c:set>
-											<div class="divTableRow" >
+											
+											<div class="divTableRow"  >
 												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>From</digi:trn>:</div>
+												<div id="dateFrom">
 												<div class="divTableCell" id="selectedDateFrom"><html:text property="selectedDateFrom" styleClass="inp-text" readonly="true" styleId="selectedDateFromText"/>
-													<a id="date2" href='javascript:pickDateById2("selectedDateFrom","selectedDateFromText",true,"tl")'>
+													
+													<a id="date2" href='javascript:pickDateById2("dateFrom","selectedDateFromText",true,"tl")'>
 														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
 													</a>
 													<a id="clear2" href='javascript:clearDate("selectedDateFromText")'>
 														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
-													</a></div>
+													</a>
+													</div>
+													
+													</div>
 											</div>
 											<div class="divTableRow">
 												<div class="divTableCell divTableCellLeft" ><c:out value="${dateTr}"/> <digi:trn>To</digi:trn>:</div>
+												
+												<div id="dateTo">
 												<div class="divTableCell" id="selectedDateTo">                                 	<html:text property="selectedDateTo" styleClass="inp-text" readonly="true" styleId="selectedDateToText"/>
-													<a id="date2" href='javascript:pickDateById2("selectedDateTo","selectedDateToText",true,"tl")'>
+													
+													<a id="date2" href='javascript:pickDateById2("dateTo","selectedDateToText",true,"tl")'>
 														<img src="../ampTemplate/images/show-calendar.gif" alt="Click to View Calendar" border="0"/>
 													</a>
+												
 													<a id="clear2" href='javascript:clearDate("selectedDateToText")'>
 														<digi:img src="/TEMPLATE/ampTemplate/imagesSource/common/trash_16.gif" border="0" alt="Delete this date"/>
-													</a></div>
+													</a>
+														</div>
+														</div>
 											</div>
 											<div class="divTableRow">
 												<div class="divTableCell divTableCellLeft"><input  class="dr-menu" type="button" onclick="submitFilter()" value="<digi:trn>Apply</digi:trn>"></div>
