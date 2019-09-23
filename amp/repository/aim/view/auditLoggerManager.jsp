@@ -136,6 +136,14 @@ function exportScorecard () {
 	window.location =  "/rest/scorecard/export";
 }
 
+function filtersort(filterBy) {
+    document.aimAuditLoggerManagerForm.selectedUser.value = document.getElementById("userId").value;
+    document.aimAuditLoggerManagerForm.selectedTeam.value = document.getElementById("teamId").value;
+    document.aimAuditLoggerManagerForm.selectedDateFrom.value = document.getElementById("selectedDateFromText").value;
+    document.aimAuditLoggerManagerForm.selectedDateTo.value = document.getElementById("selectedDateToText").value;
+    document.aimAuditLoggerManagerForm.action = "/auditLoggerManager.do?sortBy="+filterBy;
+    document.aimAuditLoggerManagerForm.submit();	
+}
 </script>
 
 <h1 class="admintitle"><digi:trn key="aim:AuditLoggerManager">Audit Logger Manager</digi:trn></h1> 
