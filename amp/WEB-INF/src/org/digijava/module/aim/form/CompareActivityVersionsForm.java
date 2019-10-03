@@ -36,6 +36,16 @@ public class CompareActivityVersionsForm extends FilterAuditLoggerForm {
 
 
     private List<ActivityComparisonResult> activityComparisonResultList;
+    
+    private String activityName;
+
+    public String getActivityName() {
+        return activityName;
+    }
+
+    public void setActivityName(String activityName) {
+        this.activityName = activityName;
+    }
 
     public List<ActivityComparisonResult> getActivityComparisonResultList() {
         return this.activityComparisonResultList;

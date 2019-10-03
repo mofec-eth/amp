@@ -79,6 +79,11 @@
 				</li>
 			</ul>
 		</div>
+		
+	<div class="printPreview">
+	<strong>Activity: <bean:write name="aimCompareActivityVersionsForm" property="activityName" /> </strong>
+	</div>
+	
 		<div style="border: 1px solid rgb(208, 208, 208); padding: 10px;font-size:12px; height: 100%;" class="contentstyle" id="ajaxcontentarea">
 			<table border="0" cellpadding="2" cellspacing="0" bgcolor="#FFFFFF" id="dataTable" width="100%">
 				<tr>
