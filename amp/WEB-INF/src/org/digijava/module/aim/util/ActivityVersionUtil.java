@@ -54,6 +54,7 @@ public class ActivityVersionUtil {
 
     private static final Integer AUDIT_LOGGER_ID = 4;
     private static Logger logger = Logger.getLogger(ActivityVersionUtil.class);
+    public static String activityName;
 
 
     public static Method getMethodFromFieldName(String fieldName, Class auxClass, String prefix) throws Exception {
@@ -357,12 +358,12 @@ public class ActivityVersionUtil {
     
     
     public static Map<String, List<CompareOutput>> compareActivities(Long activityOneId) throws Exception {
-
         ActivityComparisonContext context = new ActivityComparisonContext(TLSUtils.getSite().getId(),
                 TLSUtils.getSite().getName(), TLSUtils.getEffectiveLangCode());
 
         Session session = PersistenceManager.getRequestDBSession();
         AmpActivityVersion ampActivityOne = (AmpActivityVersion) session.load(AmpActivityVersion.class, activityOneId);
+        activityName = ampActivityOne.getName();
         AmpActivityVersion ampActivityTwo = ActivityUtil.getPreviousVersion(ampActivityOne);
         // Since ampActivityTwo is a ref. variable of type AmpActivityVersion,
         // we can't use equals() to compare references.

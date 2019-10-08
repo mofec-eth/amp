@@ -358,10 +358,8 @@ public class CompareActivityVersions extends DispatchAction {
             HttpServletResponse response) throws Exception {
 
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
-        AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
-        vForm.setActivityName(av.getName());
         vForm.setOutputCollectionGrouped(ActivityVersionUtil.compareActivities(vForm.getActivityOneId()));
-
+        vForm.setActivityName(ActivityVersionUtil.activityName);
         return mapping.findForward("forward");
     }
 
