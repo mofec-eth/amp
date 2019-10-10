@@ -356,20 +356,18 @@ public class ActivityVersionUtil {
     }
     
     
-    public static Map<String, List<CompareOutput>> compareActivities(Long activityOneId) throws Exception {
-
+    public static ActivityComparisonResult compareActivities(Long activityOneId) throws Exception {
         ActivityComparisonContext context = new ActivityComparisonContext(TLSUtils.getSite().getId(),
                 TLSUtils.getSite().getName(), TLSUtils.getEffectiveLangCode());
 
         Session session = PersistenceManager.getRequestDBSession();
         AmpActivityVersion ampActivityOne = (AmpActivityVersion) session.load(AmpActivityVersion.class, activityOneId);
         AmpActivityVersion ampActivityTwo = ActivityUtil.getPreviousVersion(ampActivityOne);
-        // Since ampActivityTwo is a ref. variable of type AmpActivityVersion,
-        // we can't use equals() to compare references.
-        // Instead we use == operator to compare references, while equals() is to compare the object content.
-        return (ampActivityTwo == null) ? null
-                : compareActivities(activityOneId, ampActivityTwo.getAmpActivityId(), context);
 
+        return (ampActivityTwo == null) ? null
+                : new ActivityComparisonResult(activityOneId, ampActivityOne.getAmpId() + " "
+                + ampActivityOne.getName(), compareActivities(activityOneId,
+                ampActivityTwo.getAmpActivityId(), context)) ;
     }
         
        
