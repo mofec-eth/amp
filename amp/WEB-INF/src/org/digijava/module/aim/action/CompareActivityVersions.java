@@ -412,6 +412,7 @@ public class CompareActivityVersions extends DispatchAction {
 	
    public ActionForward xlsExport(ActionMapping mapping, ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+        List<ActivityComparisonResult> comparisonResult;
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-disposition", "inline; filename=AuditLogger.xls");
         CompareActivityVersionsForm vForm = (CompareActivityVersionsForm) form;
@@ -421,8 +422,11 @@ public class CompareActivityVersions extends DispatchAction {
             HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollection);
             wb.write(response.getOutputStream());
         } else {
+            AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
             Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
-            HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollectionGrouped);
+            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(av.getAmpActivityId(),
+                    av.getAmpId() + " " + av.getName(), outputCollectionGrouped)));
+            HSSFWorkbook wb = auditExcelExporter.generateExcel(comparisonResult);
             wb.write(response.getOutputStream());
         }
         return null;

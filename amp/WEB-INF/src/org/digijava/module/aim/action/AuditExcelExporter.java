@@ -30,15 +30,7 @@ public  class AuditExcelExporter {
         auditXLSExportService = new AuditXLSExportService();
     }
 
-    public HSSFWorkbook generateExcel(Map<String, List<CompareOutput>> outputCollectionGrouped) {
-
-        HSSFSheet sheet = createWorkbook();
-        getCellValues(outputCollectionGrouped, sheet, rowIndex);
-        auditXLSExportService.setColumnWidth(sheet);
-        return sheet.getWorkbook();
-    }
-
-    public HSSFWorkbook generateExcel(List<ActivityComparisonResult> outputCollection) {
+   public HSSFWorkbook generateExcel(List<ActivityComparisonResult> outputCollection) {
 
         HSSFSheet sheet = createWorkbook();
         for (ActivityComparisonResult result : outputCollection) {
@@ -47,7 +39,7 @@ public  class AuditExcelExporter {
             HSSFRow nameRow = sheet.createRow(rowIndex);
             sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, FIRST_COLUMN, LAST_COLUMN));
             rowIndex++;
-            HSSFCell nameCell = nameRow.createCell(cellIndex++);
+            HSSFCell nameCell = nameRow.createCell(cellIndex);
             nameCell.setCellValue(name);
             nameCell.setCellStyle(auditXLSExportService.getOrCreateTitleStyle(sheet.getWorkbook()));
             Map<String, List<CompareOutput>> outputCollectionGrouped = result.getCompareOutput();
