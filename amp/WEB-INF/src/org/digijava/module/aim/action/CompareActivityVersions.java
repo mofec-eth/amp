@@ -422,10 +422,9 @@ public class CompareActivityVersions extends DispatchAction {
             HSSFWorkbook wb = auditExcelExporter.generateExcel(outputCollection);
             wb.write(response.getOutputStream());
         } else {
-            AmpActivityVersion av = ActivityUtil.loadActivity(vForm.getActivityOneId());
             Map<String, List<CompareOutput>> outputCollectionGrouped = vForm.getOutputCollectionGrouped();
-            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(av.getAmpActivityId(),
-                    av.getAmpId() + " " + av.getName(), outputCollectionGrouped)));
+            comparisonResult = new ArrayList(Arrays.asList(new ActivityComparisonResult(vForm.getActivityOneId(),
+                    vForm.getActivityName(), outputCollectionGrouped)));
             HSSFWorkbook wb = auditExcelExporter.generateExcel(comparisonResult);
             wb.write(response.getOutputStream());
         }

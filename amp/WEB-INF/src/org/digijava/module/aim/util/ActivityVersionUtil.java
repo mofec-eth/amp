@@ -365,7 +365,8 @@ public class ActivityVersionUtil {
         AmpActivityVersion ampActivityTwo = ActivityUtil.getPreviousVersion(ampActivityOne);
 
         return (ampActivityTwo == null) ? null
-                : new ActivityComparisonResult(activityOneId, ampActivityOne.getName(), compareActivities(activityOneId,
+                : new ActivityComparisonResult(activityOneId, ampActivityOne.getAmpId() + " "
+                + ampActivityOne.getName(), compareActivities(activityOneId,
                 ampActivityTwo.getAmpActivityId(), context)) ;
     }
         
